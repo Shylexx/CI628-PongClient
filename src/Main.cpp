@@ -1,15 +1,4 @@
-#include "SDL_net.h"
-
 #include "MyGame.h"
-
-using namespace std;
-
-const char* IP_NAME = "localhost";
-const Uint16 PORT = 55555;
-
-bool is_running = true;
-
-MyGame* game = new MyGame();
 
 static int on_receive(void* socket_ptr) {
     TCPsocket socket = (TCPsocket)socket_ptr;
@@ -27,16 +16,16 @@ static int on_receive(void* socket_ptr) {
         char* pch = strtok(message, ",");
 
         // get the command, which is the first string in the message
-        string cmd(pch);
+        std::string cmd(pch);
 
         // then get the arguments to the command
-        vector<string> args;
+        std::vector<std::string> args;
 
         while (pch != NULL) {
             pch = strtok(NULL, ",");
 
             if (pch != NULL) {
-                args.push_back(string(pch));
+                args.push_back(std::string(pch));
             }
         }
 
@@ -138,50 +127,13 @@ int run_game() {
 }
 
 int main(int argc, char** argv) {
-
-    // Initialize SDL
-    if (SDL_Init(0) == -1) {
-        printf("SDL_Init: %s\n", SDL_GetError());
-        exit(1);
-    }
-
-    // Initialize SDL_net
-    if (SDLNet_Init() == -1) {
-        printf("SDLNet_Init: %s\n", SDLNet_GetError());
-        exit(2);
-    }
-
-    IPaddress ip;
-
-    // Resolve host (ip name + port) into an IPaddress type
-    if (SDLNet_ResolveHost(&ip, IP_NAME, PORT) == -1) {
-        printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-        exit(3);
-    }
-
-    // Open the connection to the server
-    TCPsocket socket = SDLNet_TCP_Open(&ip);
-
-    if (!socket) {
-        printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-        exit(4);
-    }
-
-    SDL_CreateThread(on_receive, "ConnectionReceiveThread", (void*)socket);
-    SDL_CreateThread(on_send, "ConnectionSendThread", (void*)socket);
-
+    MyGame* app = new MyGame();
+    app->run();
     run_game();
 
+    app->cleanup();
     delete game;
-
-    // Close connection to the server
-    SDLNet_TCP_Close(socket);
-
-    // Shutdown SDL_net
-    SDLNet_Quit();
-
-    // Shutdown SDL
-    SDL_Quit();
+    delete app;
 
     return 0;
 }
