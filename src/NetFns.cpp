@@ -1,25 +1,64 @@
 #include "NetFns.h"
 #include "SDL_net.h"
+#include "MyGame.h"
+#include <string>
+#include <vector>
 
 namespace Net {
-	int on_receive(void* socket_ptr) {
+	int on_receive(void* engine) {
+        MyGame* engineptr = static_cast<MyGame*>(engine);
+        TCPsocket socket = engineptr->GetSocket();
 
+        const int message_length = 1024;
+
+        char message[message_length];
+        int received;
+
+        // TODO: while(), rather than do
+        do {
+            received = SDLNet_TCP_Recv(socket, message, message_length);
+            message[received] = '\0';
+
+            char* pch = strtok(message, ",");
+
+            // get the command, which is the first string in the message
+            std::string cmd(pch);
+
+            // then get the arguments to the command
+            std::vector<std::string> args;
+
+            while (pch != NULL) {
+                pch = strtok(NULL, ",");
+
+                if (pch != NULL) {
+                    args.push_back(std::string(pch));
+                }
+            }
+
+            engineptr->callback_game_recv(cmd, args);
+
+            if (cmd == "exit") {
+                break;
+            }
+
+        } while (received > 0 && !engineptr->ShouldQuit());
 	}
 
-	int on_send(void* socket_ptr) {
-        TCPsocket socket = (TCPsocket)socket_ptr;
+	int on_send(void* engine) {
+        MyGame* engineptr = static_cast<MyGame*>(engine);
+        TCPsocket socket = engineptr->GetSocket();
 
-        while (is_running) {
-            if (game->messages.size() > 0) {
-                string message = "CLIENT_DATA";
+        while (!engineptr->ShouldQuit()) {
+            if (engineptr->m_Messages.size() > 0) {
+                std::string message = "CLIENT_DATA";
 
-                for (auto m : game->messages) {
+                for (auto m : engineptr->m_Messages) {
                     message += "," + m;
                 }
 
-                game->messages.clear();
+                engineptr->m_Messages.clear();
 
-                cout << "Sending_TCP: " << message << endl;
+                std::cout << "Sending_TCP: " << message << std::endl;
 
                 SDLNet_TCP_Send(socket, message.c_str(), message.length());
             }

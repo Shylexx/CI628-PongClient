@@ -32,8 +32,30 @@ MyGame::MyGame() {
         exit(4);
     }
 
-    SDL_CreateThread(Net::on_receive, "ConnectionReceiveThread", (void*)m_Socket);
-    SDL_CreateThread(Net::on_send, "ConnectionSendThread", (void*)m_Socket);
+    SDL_CreateThread(Net::on_receive, "ConnectionReceiveThread", (void*)this);
+    SDL_CreateThread(Net::on_send, "ConnectionSendThread", (void*)this);
+
+
+    // Engine Init
+
+    // Window
+    m_Window = SDL_CreateWindow(
+        "Multiplayer Pong Client",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        800, 600,
+        SDL_WINDOW_SHOWN
+    );
+
+    if (!m_Window) {
+        std::cerr << "Failed to create window" << SDL_GetError() << std::endl;
+    }
+
+    // Renderer
+    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+
+    if (!m_Renderer) {
+        std::cerr << "Failed to create renderer" << SDL_GetError() << std::endl;
+    }
 }
 
 int MyGame::run() {
@@ -92,6 +114,10 @@ void MyGame::cleanup() {
     SDL_Quit();
 }
 
+void MyGame::callback_game_send() {
+
+}
+
 void MyGame::callback_game_recv(std::string cmd, std::vector<std::string>& args) {
     if (cmd == "GAME_DATA") {
         // we should have exactly 4 arguments
@@ -107,7 +133,7 @@ void MyGame::callback_game_recv(std::string cmd, std::vector<std::string>& args)
 }
 
 void MyGame::send(std::string message) {
-    messages.push_back(message);
+    m_Messages.push_back(message);
 }
 
 void MyGame::input(SDL_Event& event) {

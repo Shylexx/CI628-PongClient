@@ -7,7 +7,12 @@
 
 #include "SDL.h"
 #include "SDL_net.h"
-#include "NetFns.h"
+
+// Forward Declare networking functions
+namespace Net {
+    int on_send(void* engine);
+    int on_receive(void* engine);
+}
 
 static struct GameData {
     int player1Y = 0;
@@ -20,31 +25,39 @@ class MyGame {
 
     private:
         SDL_Rect player1 = { 0, 0, 20, 60 };
-        bool m_ShouldQuit = false;
+        
         SDL_Renderer* m_Renderer;
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;
+
+        bool m_ShouldQuit = false;
         TCPsocket m_Socket;
-
-    public:
-        MyGame();
-        std::vector<std::string> messages;
-
+        SDL_Window* m_Window;
         
+        void main_loop();
         void input(SDL_Event& event);
         void update();
         void render();
 
+    public:
+        MyGame();
+        std::vector<std::string> m_Messages;
         int run();
-        void main_loop();
+        
         void cleanup();
 
+        // Networking functions
+        // Runs when we send a message to the server from the client
         void callback_game_send();
+        // Runs when the client receives a message from the server
         void callback_game_recv(std::string message, std::vector<std::string>& args);
-
-        // Static SDL functions
-        
+        // Queues a message to be sent in the next frame
         void send(std::string message);
+
+        // Accessors for private members
+        TCPsocket GetSocket() { return m_Socket; }
+        SDL_Window* GetWindow() { return m_Window; }
+        bool ShouldQuit() { return m_ShouldQuit; }
 };
 
 #endif

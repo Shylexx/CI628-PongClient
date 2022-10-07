@@ -2,7 +2,7 @@
 #define __NET_FNS__
 
 namespace Net {
-	int on_send(void* socket_ptr);
-	int on_receive(void* socket_ptr);
+	int on_send(void* engine);
+	int on_receive(void* engine);
 }
 #endif
