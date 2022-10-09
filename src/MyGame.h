@@ -8,6 +8,8 @@
 #include "SDL.h"
 #include "SDL_net.h"
 
+#include "ECS/ECS.h"
+
 // Forward Declare networking functions
 namespace Net {
     int on_send(void* engine);
@@ -38,6 +40,9 @@ class MyGame {
         void input(SDL_Event& event);
         void update();
         void render();
+
+        // ECS Scene holds data of all objects in the scene
+        ECS::Scene* m_Scene;
 
     public:
         MyGame();

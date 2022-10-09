@@ -1,6 +1,6 @@
 #include "NetFns.h"
 #include "SDL_net.h"
-#include "MyGame.h"
+#include "../MyGame.h"
 #include <string>
 #include <vector>
 
@@ -50,6 +50,9 @@ namespace Net {
 
         while (!engineptr->ShouldQuit()) {
             if (engineptr->m_Messages.size() > 0) {
+
+                // TODO: CREATE EVENT CLASS TO SEND EVENT DATA IN A STRUCT?
+
                 std::string message = "CLIENT_DATA";
 
                 for (auto m : engineptr->m_Messages) {

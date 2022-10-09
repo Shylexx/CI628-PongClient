@@ -56,10 +56,37 @@ MyGame::MyGame() {
     if (!m_Renderer) {
         std::cerr << "Failed to create renderer" << SDL_GetError() << std::endl;
     }
+
+    m_Scene = new ECS::Scene();
 }
 
 int MyGame::run() {
   
+    // ECS TESTING
+
+    SDL_Log("ECS Test Start");
+
+    // Empty Entity
+    m_Scene->NewEntity();
+
+    // Entity with a name component
+    Entity testEntity = m_Scene->NewEntity();
+    m_Scene->AddComponents(testEntity, CompTags::Name);
+    m_Scene->m_Names[testEntity] = "Test Entity Name";
+
+    // Empty Entity
+    m_Scene->NewEntity();
+
+    // Print names of all entities with name components
+    for (Entity e = 0; e < MAX_ENTITIES; e++) {
+        // Skip names of entities without names
+        if (!m_Scene->HasComponents(e, CompTags::Name)) { continue; }
+
+        std::cout << m_Scene->m_Names[e] << std::endl;
+    }
+
+    SDL_Log("ECS Test End");
+
     main_loop();
 
     return 0;
@@ -104,6 +131,9 @@ void MyGame::main_loop() {
 
 void MyGame::cleanup() {
 
+    // Cleanup the ECS Scene
+    delete m_Scene;
+
     // Close connection to the server
     SDLNet_TCP_Close(m_Socket);
 
@@ -145,6 +175,7 @@ void MyGame::input(SDL_Event& event) {
 }
 
 void MyGame::update() {
+    // Set local player location based on received data
     player1.y = game_data.player1Y;
 }
 
