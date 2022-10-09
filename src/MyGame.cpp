@@ -38,24 +38,7 @@ MyGame::MyGame() {
 
     // Engine Init
 
-    // Window
-    m_Window = SDL_CreateWindow(
-        "Multiplayer Pong Client",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600,
-        SDL_WINDOW_SHOWN
-    );
-
-    if (!m_Window) {
-        std::cerr << "Failed to create window" << SDL_GetError() << std::endl;
-    }
-
-    // Renderer
-    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
-
-    if (!m_Renderer) {
-        std::cerr << "Failed to create renderer" << SDL_GetError() << std::endl;
-    }
+    m_Graphics.Init();
 
     m_Scene = new ECS::Scene();
 }
@@ -87,6 +70,10 @@ int MyGame::run() {
 
     SDL_Log("ECS Test End");
 
+    player = m_Scene->NewEntity();
+    m_Scene->AddComponents(player, CompTags::Transform);
+    m_Scene->m_Transforms[player].m_Rect = { 0, 0, 20, 60 };
+
     main_loop();
 
     return 0;
@@ -116,14 +103,11 @@ void MyGame::main_loop() {
             }
         }
 
-        SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, 255);
-        SDL_RenderClear(m_Renderer);
+        m_Graphics.ClearScreen();
 
         update();
 
         render();
-
-        SDL_RenderPresent(m_Renderer);
 
         SDL_Delay(17);
     }
@@ -133,6 +117,8 @@ void MyGame::cleanup() {
 
     // Cleanup the ECS Scene
     delete m_Scene;
+
+    m_Graphics.Cleanup();
 
     // Close connection to the server
     SDLNet_TCP_Close(m_Socket);
@@ -177,9 +163,14 @@ void MyGame::input(SDL_Event& event) {
 void MyGame::update() {
     // Set local player location based on received data
     player1.y = game_data.player1Y;
+    m_Scene->m_Transforms[player].m_Rect.y = game_data.player1Y;
 }
 
 void MyGame::render() {
-    SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect(m_Renderer, &player1);
+    //SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+    //SDL_RenderDrawRect(m_Renderer, &player1);
+
+
+    m_Graphics.DrawScene(m_Scene);
+    m_Graphics.Present();
 }

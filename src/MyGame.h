@@ -8,6 +8,7 @@
 #include "SDL.h"
 #include "SDL_net.h"
 
+#include "Engine/Graphics.h"
 #include "ECS/ECS.h"
 
 // Forward Declare networking functions
@@ -27,14 +28,13 @@ class MyGame {
 
     private:
         SDL_Rect player1 = { 0, 0, 20, 60 };
+        Entity player;
         
-        SDL_Renderer* m_Renderer;
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;
 
         bool m_ShouldQuit = false;
         TCPsocket m_Socket;
-        SDL_Window* m_Window;
         
         void main_loop();
         void input(SDL_Event& event);
@@ -43,6 +43,8 @@ class MyGame {
 
         // ECS Scene holds data of all objects in the scene
         ECS::Scene* m_Scene;
+
+        Graphics m_Graphics;
 
     public:
         MyGame();
@@ -61,7 +63,6 @@ class MyGame {
 
         // Accessors for private members
         TCPsocket GetSocket() { return m_Socket; }
-        SDL_Window* GetWindow() { return m_Window; }
         bool ShouldQuit() { return m_ShouldQuit; }
 };
 
