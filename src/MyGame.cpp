@@ -1,5 +1,8 @@
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "SDL_net.h"
 #include "MyGame.h"
+#include "Gameplay/Physics.h"
 
 // Constructor / Init
 MyGame::MyGame() {
@@ -35,12 +38,29 @@ MyGame::MyGame() {
     SDL_CreateThread(Net::on_receive, "ConnectionReceiveThread", (void*)this);
     SDL_CreateThread(Net::on_send, "ConnectionSendThread", (void*)this);
 
+    if (!IMG_Init) {
+        printf("SDL Image failed to load!");
+        exit(4);
+    }
 
+    if (!TTF_Init) {
+        printf("SDL TTF Failed to load!");
+        exit(4);
+    }
+
+
+    
     // Engine Init
 
-    m_Graphics.Init();
+    m_Graphics->Init();
+
+    m_Assets->Init(m_Graphics);
 
     m_Scene = new ECS::Scene();
+
+    player = m_Scene->NewEntity();
+    m_Scene->AddComponents(player, CompTags::Transform);
+    m_Scene->m_Transforms[player].m_Rect = { 0, 0, 20, 60 };
 }
 
 int MyGame::run() {
@@ -70,9 +90,6 @@ int MyGame::run() {
 
     SDL_Log("ECS Test End");
 
-    player = m_Scene->NewEntity();
-    m_Scene->AddComponents(player, CompTags::Transform);
-    m_Scene->m_Transforms[player].m_Rect = { 0, 0, 20, 60 };
 
     main_loop();
 
@@ -103,7 +120,7 @@ void MyGame::main_loop() {
             }
         }
 
-        m_Graphics.ClearScreen();
+        m_Graphics->ClearScreen();
 
         update();
 
@@ -118,7 +135,12 @@ void MyGame::cleanup() {
     // Cleanup the ECS Scene
     delete m_Scene;
 
-    m_Graphics.Cleanup();
+    m_Assets->Cleanup();
+
+    m_Graphics->Cleanup();
+
+    IMG_Quit();
+    TTF_Quit();
 
     // Close connection to the server
     SDLNet_TCP_Close(m_Socket);
@@ -164,6 +186,8 @@ void MyGame::update() {
     // Set local player location based on received data
     player1.y = game_data.player1Y;
     m_Scene->m_Transforms[player].m_Rect.y = game_data.player1Y;
+
+    update_kinematics();
 }
 
 void MyGame::render() {
@@ -171,6 +195,6 @@ void MyGame::render() {
     //SDL_RenderDrawRect(m_Renderer, &player1);
 
 
-    m_Graphics.DrawScene(m_Scene);
-    m_Graphics.Present();
+    m_Graphics->DrawScene(m_Scene);
+    m_Graphics->Present();
 }

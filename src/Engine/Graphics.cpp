@@ -46,3 +46,7 @@ void Graphics::DrawScene(ECS::Scene* scene) {
         SDL_RenderDrawRect(m_Renderer, &scene->m_Transforms[e].m_Rect);
     }
 }
+
+SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {
+    return SDL_CreateTextureFromSurface(m_Renderer, surface);
+}

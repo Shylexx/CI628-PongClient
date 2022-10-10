@@ -9,6 +9,8 @@ private:
 	SDL_Renderer* m_Renderer;
 	SDL_Window* m_Window;
 public:
+	SDL_Texture* TextureFromSurface(SDL_Surface* surface);
+
 	void Init();
 	void Cleanup();
 

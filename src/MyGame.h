@@ -10,6 +10,7 @@
 
 #include "Engine/Graphics.h"
 #include "ECS/ECS.h"
+#include "Engine/AssetManager.h"
 
 // Forward Declare networking functions
 namespace Net {
@@ -44,7 +45,8 @@ class MyGame {
         // ECS Scene holds data of all objects in the scene
         ECS::Scene* m_Scene;
 
-        Graphics m_Graphics;
+        std::shared_ptr<Graphics> m_Graphics;
+        std::shared_ptr<AssetManager> m_Assets;
 
     public:
         MyGame();
