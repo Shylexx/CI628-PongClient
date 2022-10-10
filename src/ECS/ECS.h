@@ -1,10 +1,12 @@
+#ifndef __ECS_H__
+#define __ECS_H__
+
 #include <cstdint>
 #include <bitset>
 #include <array>
 #include <vector>
 #include "Components.h"
-#ifndef __ECS_H__
-#define __ECS_H__
+
 
 // EntityTags array is 20kb with 5000 entries
 constexpr int MAX_ENTITIES = 50;
@@ -41,8 +43,17 @@ namespace ECS {
 		bool IsValid(Entity e);
 		bool HasComponents(Entity e, EntitySig s);
 		void AddComponents(Entity e, EntitySig c);
+		// Retrieves the requested component on the given entity
+		
+		// Helper for common components
+		Transform GetTransform(Entity e);
+		Name GetName(Entity e);
+		SpriteRender GetSpriteRender(Entity e);
+
 		Entity NewEntity();
 
+		// Finds the first entity with a matching name, name must exist or error
+		Entity FindEntityByName(const std::string& name);
 
 
 
