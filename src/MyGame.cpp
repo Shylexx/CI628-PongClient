@@ -100,6 +100,11 @@ void MyGame::main_loop() {
     SDL_Event event;
 
     while (!m_ShouldQuit) {
+        // Timekeeping
+        m_Last = m_Now;
+        m_Now = SDL_GetPerformanceCounter();
+        deltaTime = ((m_Now - m_Last)*1000 / (double)SDL_GetPerformanceFrequency() );
+
         // input
         while (SDL_PollEvent(&event)) {
             if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) && event.key.repeat == 0) {
@@ -187,7 +192,7 @@ void MyGame::update() {
     player1.y = game_data.player1Y;
     m_Scene->m_Transforms[player].m_Rect.y = game_data.player1Y;
 
-    update_kinematics();
+    update_kinematics(m_Scene, deltaTime);
 }
 
 void MyGame::render() {

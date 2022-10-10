@@ -42,6 +42,11 @@ class MyGame {
         void update();
         void render();
 
+        // Timekeeping
+        uint64_t m_Now = SDL_GetPerformanceCounter();
+        uint64_t m_Last = 0;
+        float deltaTime = 0;
+
         // ECS Scene holds data of all objects in the scene
         ECS::Scene* m_Scene;
 

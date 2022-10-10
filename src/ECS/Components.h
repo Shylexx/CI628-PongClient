@@ -48,5 +48,12 @@ namespace ECS {
 		// Player Health points
 		int m_Health;
 	};
+
+	// Collider Object for collision testing
+	using Collider = SDL_Rect;
+
+	struct Kinematic {
+		Vec2 Velocity;
+	};
 }
 #endif
