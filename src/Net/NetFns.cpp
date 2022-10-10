@@ -35,7 +35,13 @@ namespace Net {
                 }
             }
 
-            engineptr->callback_game_recv(cmd, args);
+   
+            if (cmd == "GAME_DATA") {
+                engineptr->callback_game_recv(args);
+            }
+            else if (cmd == "ON_CONNECT") {
+                engineptr->callback_on_connect(args);
+            }
 
             if (cmd == "exit") {
                 break;

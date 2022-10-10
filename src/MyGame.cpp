@@ -49,8 +49,11 @@ MyGame::MyGame() {
     }
 
 
-    
+
     // Engine Init
+
+    m_Graphics = std::make_shared<Graphics>();
+    m_Assets = std::make_shared<AssetManager>();
 
     m_Graphics->Init();
 
@@ -58,37 +61,41 @@ MyGame::MyGame() {
 
     m_Scene = new ECS::Scene();
 
-    player = m_Scene->NewEntity();
-    m_Scene->AddComponents(player, CompTags::Transform);
-    m_Scene->m_Transforms[player].m_Rect = { 0, 0, 20, 60 };
+    player1 = m_Scene->NewEntity();
+    m_Scene->AddComponents(player1, CompTags::Transform);
+    m_Scene->m_Transforms[player1].m_Rect = { 0, 0, 20, 60 };
+
+    player2 = m_Scene->NewEntity();
+    m_Scene->AddComponents(player2, CompTags::Transform);
+    m_Scene->m_Transforms[player2].m_Rect = { 0, 600, 20, 60 };
 }
 
 int MyGame::run() {
   
-    // ECS TESTING
+    //// ECS TESTING
 
-    SDL_Log("ECS Test Start");
+    //SDL_Log("ECS Test Start");
 
-    // Empty Entity
-    m_Scene->NewEntity();
+    //// Empty Entity
+    //m_Scene->NewEntity();
 
-    // Entity with a name component
-    Entity testEntity = m_Scene->NewEntity();
-    m_Scene->AddComponents(testEntity, CompTags::Name);
-    m_Scene->m_Names[testEntity] = "Test Entity Name";
+    //// Entity with a name component
+    //Entity testEntity = m_Scene->NewEntity();
+    //m_Scene->AddComponents(testEntity, CompTags::Name);
+    //m_Scene->m_Names[testEntity] = "Test Entity Name";
 
-    // Empty Entity
-    m_Scene->NewEntity();
+    //// Empty Entity
+    //m_Scene->NewEntity();
 
-    // Print names of all entities with name components
-    for (Entity e = 0; e < MAX_ENTITIES; e++) {
-        // Skip names of entities without names
-        if (!m_Scene->HasComponents(e, CompTags::Name)) { continue; }
+    //// Print names of all entities with name components
+    //for (Entity e = 0; e < MAX_ENTITIES; e++) {
+    //    // Skip names of entities without names
+    //    if (!m_Scene->HasComponents(e, CompTags::Name)) { continue; }
 
-        std::cout << m_Scene->m_Names[e] << std::endl;
-    }
+    //    std::cout << m_Scene->m_Names[e] << std::endl;
+    //}
 
-    SDL_Log("ECS Test End");
+    //SDL_Log("ECS Test End");
 
 
     main_loop();
@@ -161,8 +168,17 @@ void MyGame::callback_game_send() {
 
 }
 
-void MyGame::callback_game_recv(std::string cmd, std::vector<std::string>& args) {
-    if (cmd == "GAME_DATA") {
+void MyGame::callback_on_connect(std::vector<std::string>& args) {
+    if (args.size() == 1) {
+        m_NetId = stoi(args.at(0));
+        std::cout << "Player ID: " << m_NetId << std::endl;
+    }
+    else {
+        std::cerr << "Invalid On Connect Data Received!" << std::endl;
+    }
+}
+
+void MyGame::callback_game_recv(std::vector<std::string>& args) {
         // we should have exactly 4 arguments
         if (args.size() == 4) {
             game_data.player1Y = stoi(args.at(0));
@@ -170,9 +186,9 @@ void MyGame::callback_game_recv(std::string cmd, std::vector<std::string>& args)
             game_data.ballX = stoi(args.at(2));
             game_data.ballY = stoi(args.at(3));
         }
-    } else {
-        std::cout << "Received: " << cmd << std::endl;
-    }
+        else {
+            std::cerr << "Invalid Game State data received!" << std::endl;
+        }
 }
 
 void MyGame::send(std::string message) {
@@ -182,15 +198,18 @@ void MyGame::send(std::string message) {
 void MyGame::input(SDL_Event& event) {
     switch (event.key.keysym.sym) {
         case SDLK_w:
-            send(event.type == SDL_KEYDOWN ? "W_DOWN" : "W_UP");
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId)+"W_DOWN"): (std::to_string(m_NetId)+"W_UP"));
             break;
+        case SDLK_s:
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId)+"S_DOWN"): (std::to_string(m_NetId)+"S_UP"));
     }
 }
 
 void MyGame::update() {
     // Set local player location based on received data
-    player1.y = game_data.player1Y;
-    m_Scene->m_Transforms[player].m_Rect.y = game_data.player1Y;
+    //player1.y = game_data.player1Y;
+    m_Scene->m_Transforms[player1].m_Rect.y = game_data.player1Y;
+    m_Scene->m_Transforms[player2].m_Rect.y = game_data.player2Y;
 
     update_kinematics(m_Scene, deltaTime);
 }

@@ -28,8 +28,9 @@ static struct GameData {
 class MyGame {
 
     private:
-        SDL_Rect player1 = { 0, 0, 20, 60 };
-        Entity player;
+        //SDL_Rect player1 = { 0, 0, 20, 60 };
+        Entity player1;
+        Entity player2;
         
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;
@@ -53,6 +54,8 @@ class MyGame {
         std::shared_ptr<Graphics> m_Graphics;
         std::shared_ptr<AssetManager> m_Assets;
 
+        int m_NetId;
+
     public:
         MyGame();
         std::vector<std::string> m_Messages;
@@ -63,14 +66,17 @@ class MyGame {
         // Networking functions
         // Runs when we send a message to the server from the client
         void callback_game_send();
-        // Runs when the client receives a message from the server
-        void callback_game_recv(std::string message, std::vector<std::string>& args);
+        // Runs when the client receives Game transform data from the server
+        void callback_game_recv(std::vector<std::string>& args);
+        // Runs when the client receives initial game data for setup
+        void callback_on_connect(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
 
         // Accessors for private members
         TCPsocket GetSocket() { return m_Socket; }
         bool ShouldQuit() { return m_ShouldQuit; }
+        int NetID() { return m_NetId; }
 };
 
 #endif
