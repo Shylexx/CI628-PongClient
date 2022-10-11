@@ -8,12 +8,16 @@ struct Vec3 {
 
 };
 
-struct Vec2 {
+struct Vec2f {
 	float x;
 	float y;
 
-	Vec2() : Vec2(0.0f, 0.0f) {}
-	Vec2(float x, float y) : x(x), y(y) {}
+	Vec2f() : Vec2f(0.0f, 0.0f) {}
+	Vec2f(float x, float y) : x(x), y(y) {}
+
+	Vec2f operator*(float rhs) {
+		return Vec2f(x * rhs, y * rhs);
+	}
 };
 
 #endif

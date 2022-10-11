@@ -28,8 +28,6 @@ namespace ECS {
 	// Allows an Entity to be found by name rather than just tag
 	using Name = std::string;
 
-	using Velocity = Vec2;
-
 	enum Team {
 		RED,
 		BLUE,
@@ -53,7 +51,12 @@ namespace ECS {
 	using Collider = SDL_Rect;
 
 	struct Kinematic {
-		Vec2 Velocity;
+		Vec2f m_Velocity;
+		float m_JumpForce = 5.0f;
+		float m_Gravity = 0.2f;
+		float m_MaxFallSpeed = -5.0f;
+		float m_CurJumpForce = 0.0f;
+		bool m_Grounded = true;
 	};
 }
 #endif
