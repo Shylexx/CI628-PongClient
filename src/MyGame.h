@@ -31,6 +31,7 @@ class MyGame {
         //SDL_Rect player1 = { 0, 0, 20, 60 };
         Entity player1;
         Entity player2;
+        Entity ball;
         
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;

@@ -63,11 +63,15 @@ MyGame::MyGame() {
 
     player1 = m_Scene->NewEntity();
     m_Scene->AddComponents(player1, CompTags::Transform);
-    m_Scene->m_Transforms[player1].m_Rect = { 0, 0, 20, 60 };
+    m_Scene->m_Transforms[player1].m_Rect = { 200, 0, 20, 60 };
 
     player2 = m_Scene->NewEntity();
     m_Scene->AddComponents(player2, CompTags::Transform);
-    m_Scene->m_Transforms[player2].m_Rect = { 0, 600, 20, 60 };
+    m_Scene->m_Transforms[player2].m_Rect = { 600, 0, 20, 60 };
+
+    ball = m_Scene->NewEntity();
+    m_Scene->AddComponents(ball, CompTags::Transform);
+    m_Scene->m_Transforms[ball].m_Rect = { 400, 300, 10, 10 };
 }
 
 int MyGame::run() {
@@ -210,6 +214,9 @@ void MyGame::update() {
     //player1.y = game_data.player1Y;
     m_Scene->m_Transforms[player1].m_Rect.y = game_data.player1Y;
     m_Scene->m_Transforms[player2].m_Rect.y = game_data.player2Y;
+
+    m_Scene->m_Transforms[ball].m_Rect.x = game_data.ballX;
+    m_Scene->m_Transforms[ball].m_Rect.y = game_data.ballY;
 
     update_kinematics(m_Scene, deltaTime);
 }
