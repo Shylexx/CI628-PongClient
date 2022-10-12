@@ -116,11 +116,13 @@ void MyGame::main_loop() {
 void MyGame::cleanup() {
 
     // Cleanup the ECS Scene
-    delete m_Scene;
+    m_Scene->Cleanup();
 
     m_Assets->Cleanup();
 
     m_Graphics->Cleanup();
+
+    delete m_Scene;
 
     IMG_Quit();
     TTF_Quit();
@@ -164,6 +166,9 @@ void MyGame::callback_game_recv(std::vector<std::string>& args) {
         }
         else {
             std::cerr << "Invalid Game State data received!" << std::endl;
+            for (auto& arg : args) {
+                std::cerr << arg << std::endl;
+            }
         }
 }
 
@@ -180,35 +185,40 @@ void MyGame::send(std::string message) {
 
 void MyGame::preload_assets() {
     m_Assets->LoadFont("Score", "res/fonts/lato.ttf", 72);
+    m_Assets->loadTexture("Paddle", "res/sprites/paddle.png");
+    m_Assets->loadTexture("Ball", "res/sprites/ball.png");
 }
 
 void MyGame::init_entities() {
     player1 = m_Scene->NewEntity();
-    m_Scene->AddComponents(player1, CompTags::Transform);
+    m_Scene->AddComponents(player1, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[player1].m_Rect = { 200, 0, 20, 60 };
+    m_Scene->m_SpriteRenders[player1].m_Sprite = m_Assets->m_Textures.at("Paddle");
 
     player2 = m_Scene->NewEntity();
-    m_Scene->AddComponents(player2, CompTags::Transform);
+    m_Scene->AddComponents(player2, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[player2].m_Rect = { 600, 0, 20, 60 };
+    m_Scene->m_SpriteRenders[player2].m_Sprite = m_Assets->m_Textures.at("Paddle");
 
     ball = m_Scene->NewEntity();
-    m_Scene->AddComponents(ball, CompTags::Transform);
+    m_Scene->AddComponents(ball, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[ball].m_Rect = { 400, 300, 10, 10 };
+    m_Scene->m_SpriteRenders[ball].m_Sprite = m_Assets->m_Textures.at("Ball");
     
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText1].m_Rect = { 300, 600, 100, 40 };
+    m_Scene->m_Transforms[scoreText1].m_Rect = { 400, 300, 300, 300 };
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
     m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
-    m_Scene->m_Texts[scoreText1].m_Color = { 255, 165, 0 };
+    m_Scene->m_Texts[scoreText1].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 
 
     scoreText2 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText2].m_Rect = { 600, 600, 100, 40 };
-    m_Scene->m_Texts[scoreText1].m_Text = "Player 2: 0";
-    m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
-    m_Scene->m_Texts[scoreText1].m_Color = { 255, 165, 0 };
+    m_Scene->m_Transforms[scoreText2].m_Rect = { 500, 300, 300, 300 };
+    m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
+    m_Scene->m_Texts[scoreText2].m_Font = m_Assets->m_Fonts.at("Score");
+    m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 }
 
 void MyGame::input(SDL_Event& event) {
@@ -241,7 +251,6 @@ void MyGame::update() {
 void MyGame::render() {
     //SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
     //SDL_RenderDrawRect(m_Renderer, &player1);
-
 
     m_Graphics->DrawScene(m_Scene);
     m_Graphics->Present();

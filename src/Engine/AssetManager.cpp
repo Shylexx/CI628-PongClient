@@ -13,9 +13,15 @@ void AssetManager::Cleanup() {
     for (auto& pair : m_Textures) {
         // Destroy allocated texture
         SDL_DestroyTexture(pair.second);
-        // Remove entry from the map
-        m_Textures.erase(pair.first);
     }
+    // Remove entries from the map
+    m_Textures.clear();
+
+    for (auto& pair : m_Fonts) {
+        // Destroy allocated font
+        TTF_CloseFont(pair.second);
+    }
+    m_Fonts.clear();
 
     m_Gfx.reset();
 }
@@ -43,7 +49,7 @@ void AssetManager::loadTexture(std::string tag, const std::string& path) {
         SDL_FreeSurface( loadedSurface );
     }
 
-    m_Textures.insert({ tag, newTexture });
+    m_Textures.insert(std::pair<std::string, SDL_Texture*>(tag,newTexture));
 }
 
 void AssetManager::LoadFont(std::string tag, const std::string& filepath, const int& size) {
@@ -51,4 +57,5 @@ void AssetManager::LoadFont(std::string tag, const std::string& filepath, const 
     if (nullptr == font)
         std::cerr << "Could not open font at path: " << filepath << std::endl;
 	m_Fonts[tag] = font;
+    SDL_Log("Loaded font %s", tag.c_str());
 }

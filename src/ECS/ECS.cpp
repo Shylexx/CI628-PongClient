@@ -19,7 +19,7 @@ namespace ECS {
 		for (Entity e = 0; e < MAX_ENTITIES; e++)
 		{
 			if (m_Entities[e] == 0x0) {
-				SDL_Log("New Entity Spawned");
+				//SDL_Log("New Entity Spawned");
 				// Set the valid flag for the entity
 				m_Entities[e].set(0, true);
 				return e;
@@ -75,5 +75,12 @@ namespace ECS {
 
 		// If no entity with name found, error
 		throw std::runtime_error("No Entity found with name " + name);
+	}
+
+	void Scene::Cleanup() {
+		// Clear all texture references inside Sprite components
+		for (auto& comp : m_SpriteRenders) {
+			comp.m_Sprite = nullptr;
+		}
 	}
 }

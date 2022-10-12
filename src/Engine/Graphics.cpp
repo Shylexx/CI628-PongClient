@@ -45,9 +45,18 @@ void Graphics::DrawScene(ECS::Scene* scene) {
         SDL_RenderDrawRect(m_Renderer, &scene->m_Transforms[e].m_Rect);
     }
 
+    // Render all sprites
+    for (Entity e = 0; e < MAX_ENTITIES; e++) {
+        if (!scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) { continue; }
+
+        // drawsprites
+        if (&scene->m_SpriteRenders[e].m_Visible) {
+            DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
+        }
+    }
     // Draw all text components
     for (Entity e = 0; e < MAX_ENTITIES; e++) {
-        if (!scene->HasComponents(e, CompTags::Text)) { continue; }
+        if (!scene->HasComponents(e, CompTags::Text | CompTags::Transform)) { continue; }
 
         DrawText(&scene->m_Texts[e], &scene->m_Transforms[e]);
     }
@@ -66,6 +75,10 @@ void Graphics::DrawText(ECS::Text* text, ECS::Transform* transform) {
     SDL_DestroyTexture(texture);
 }
 
+void Graphics::DrawSprite(ECS::SpriteRender* sprite, ECS::Transform* transform) {
+    DrawTexture(sprite->m_Sprite, &transform->m_Rect);
+}
+
 SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(m_Renderer, surface);
 }
@@ -82,5 +95,7 @@ SDL_Texture* Graphics::TextureFromString(const std::string& string, TTF_Font* fo
 		std::cout << TTF_GetError() << std::endl;
 	}
 
+    if (textTexture == nullptr)
+        std::cerr << "Text Texture was not made!" << std::endl;
 	return textTexture;
 }

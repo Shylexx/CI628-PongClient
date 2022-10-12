@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "../Maths.h"
+#include <memory>
 
 namespace ECS {
 	struct Transform
@@ -21,7 +22,7 @@ namespace ECS {
 
 	struct SpriteRender
 	{
-		SDL_Texture* m_Sprite;
+		SDL_Texture* m_Sprite = nullptr;
 		SDL_RendererFlip m_Flip = SDL_FLIP_NONE;
 		bool m_Visible = true;
 	};

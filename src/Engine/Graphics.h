@@ -14,6 +14,7 @@ public:
 	SDL_Texture* TextureFromString(const std::string& string, TTF_Font* font, SDL_Color color);
 	void DrawTexture(SDL_Texture* texture, SDL_Rect* dest);
 	void DrawText(ECS::Text* text, ECS::Transform* transform);
+	void DrawSprite(ECS::SpriteRender* sprite, ECS::Transform* transform);
 
 	void Init();
 	void Cleanup();
