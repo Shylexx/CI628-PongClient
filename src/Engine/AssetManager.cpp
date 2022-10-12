@@ -1,6 +1,7 @@
 #include "AssetManager.h"
 #include "Graphics.h"
 #include "SDL_image.h"
+#include <iostream>
 
 
 void AssetManager::Init(std::shared_ptr<Graphics> gfx) {
@@ -43,4 +44,11 @@ void AssetManager::loadTexture(std::string tag, const std::string& path) {
     }
 
     m_Textures.insert({ tag, newTexture });
+}
+
+void AssetManager::LoadFont(std::string tag, const std::string& filepath, const int& size) {
+    TTF_Font * font = TTF_OpenFont(filepath.c_str(), size);
+    if (nullptr == font)
+        std::cerr << "Could not open font at path: " << filepath << std::endl;
+	m_Fonts[tag] = font;
 }

@@ -42,6 +42,9 @@ namespace Net {
             else if (cmd == "ON_CONNECT") {
                 engineptr->callback_on_connect(args);
             }
+            else if (cmd == "SCORES") {
+                engineptr->callback_update_scores(args);
+            }
 
             if (cmd == "exit") {
                 break;

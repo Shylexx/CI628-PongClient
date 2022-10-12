@@ -19,10 +19,14 @@ namespace Net {
 }
 
 static struct GameData {
+    int player1X = 0;
     int player1Y = 0;
+    int player2X = 0;
     int player2Y = 0;
     int ballX = 0;
     int ballY = 0;
+    int score1 = 0;
+    int score2 = 0;
 } game_data;
 
 class MyGame {
@@ -32,6 +36,8 @@ class MyGame {
         Entity player1;
         Entity player2;
         Entity ball;
+        Entity scoreText1;
+        Entity scoreText2;
         
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;
@@ -39,6 +45,8 @@ class MyGame {
         bool m_ShouldQuit = false;
         TCPsocket m_Socket;
         
+        void preload_assets();
+        void init_entities();
         void main_loop();
         void input(SDL_Event& event);
         void update();
@@ -71,6 +79,8 @@ class MyGame {
         void callback_game_recv(std::vector<std::string>& args);
         // Runs when the client receives initial game data for setup
         void callback_on_connect(std::vector<std::string>& args);
+        // updates the scores when a player scores
+        void callback_update_scores(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
 

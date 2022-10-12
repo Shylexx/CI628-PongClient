@@ -38,12 +38,12 @@ MyGame::MyGame() {
     SDL_CreateThread(Net::on_receive, "ConnectionReceiveThread", (void*)this);
     SDL_CreateThread(Net::on_send, "ConnectionSendThread", (void*)this);
 
-    if (!IMG_Init) {
+    if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         printf("SDL Image failed to load!");
         exit(4);
     }
 
-    if (!TTF_Init) {
+    if (TTF_Init() < 0) {
         printf("SDL TTF Failed to load!");
         exit(4);
     }
@@ -61,46 +61,13 @@ MyGame::MyGame() {
 
     m_Scene = new ECS::Scene();
 
-    player1 = m_Scene->NewEntity();
-    m_Scene->AddComponents(player1, CompTags::Transform);
-    m_Scene->m_Transforms[player1].m_Rect = { 200, 0, 20, 60 };
-
-    player2 = m_Scene->NewEntity();
-    m_Scene->AddComponents(player2, CompTags::Transform);
-    m_Scene->m_Transforms[player2].m_Rect = { 600, 0, 20, 60 };
-
-    ball = m_Scene->NewEntity();
-    m_Scene->AddComponents(ball, CompTags::Transform);
-    m_Scene->m_Transforms[ball].m_Rect = { 400, 300, 10, 10 };
 }
 
 int MyGame::run() {
   
-    //// ECS TESTING
+    preload_assets();
 
-    //SDL_Log("ECS Test Start");
-
-    //// Empty Entity
-    //m_Scene->NewEntity();
-
-    //// Entity with a name component
-    //Entity testEntity = m_Scene->NewEntity();
-    //m_Scene->AddComponents(testEntity, CompTags::Name);
-    //m_Scene->m_Names[testEntity] = "Test Entity Name";
-
-    //// Empty Entity
-    //m_Scene->NewEntity();
-
-    //// Print names of all entities with name components
-    //for (Entity e = 0; e < MAX_ENTITIES; e++) {
-    //    // Skip names of entities without names
-    //    if (!m_Scene->HasComponents(e, CompTags::Name)) { continue; }
-
-    //    std::cout << m_Scene->m_Names[e] << std::endl;
-    //}
-
-    //SDL_Log("ECS Test End");
-
+    init_entities();
 
     main_loop();
 
@@ -179,24 +146,69 @@ void MyGame::callback_on_connect(std::vector<std::string>& args) {
     }
     else {
         std::cerr << "Invalid On Connect Data Received!" << std::endl;
+        for (auto& arg : args) {
+            std::cerr << arg << std::endl;
+        }
     }
 }
 
 void MyGame::callback_game_recv(std::vector<std::string>& args) {
-        // we should have exactly 4 arguments
-        if (args.size() == 4) {
-            game_data.player1Y = stoi(args.at(0));
-            game_data.player2Y = stoi(args.at(1));
-            game_data.ballX = stoi(args.at(2));
-            game_data.ballY = stoi(args.at(3));
+        // we should have exactly 6 arguments
+        if (args.size() == 6) {
+            game_data.player1X = stoi(args.at(0));
+            game_data.player1Y = stoi(args.at(1));
+            game_data.player2X = stoi(args.at(2));
+            game_data.player2Y = stoi(args.at(3));
+            game_data.ballX = stoi(args.at(4));
+            game_data.ballY = stoi(args.at(5));
         }
         else {
             std::cerr << "Invalid Game State data received!" << std::endl;
         }
 }
 
+void MyGame::callback_update_scores(std::vector<std::string>& args) {
+    if (args.size() == 2) {
+        game_data.score1 = stoi(args.at(0));
+        game_data.score2 = stoi(args.at(1));
+    }
+}
+
 void MyGame::send(std::string message) {
     m_Messages.push_back(message);
+}
+
+void MyGame::preload_assets() {
+    m_Assets->LoadFont("Score", "res/fonts/lato.ttf", 72);
+}
+
+void MyGame::init_entities() {
+    player1 = m_Scene->NewEntity();
+    m_Scene->AddComponents(player1, CompTags::Transform);
+    m_Scene->m_Transforms[player1].m_Rect = { 200, 0, 20, 60 };
+
+    player2 = m_Scene->NewEntity();
+    m_Scene->AddComponents(player2, CompTags::Transform);
+    m_Scene->m_Transforms[player2].m_Rect = { 600, 0, 20, 60 };
+
+    ball = m_Scene->NewEntity();
+    m_Scene->AddComponents(ball, CompTags::Transform);
+    m_Scene->m_Transforms[ball].m_Rect = { 400, 300, 10, 10 };
+    
+    scoreText1 = m_Scene->NewEntity();
+    m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
+    m_Scene->m_Transforms[scoreText1].m_Rect = { 300, 600, 100, 40 };
+    m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
+    m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
+    m_Scene->m_Texts[scoreText1].m_Color = { 255, 165, 0 };
+
+
+    scoreText2 = m_Scene->NewEntity();
+    m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
+    m_Scene->m_Transforms[scoreText2].m_Rect = { 600, 600, 100, 40 };
+    m_Scene->m_Texts[scoreText1].m_Text = "Player 2: 0";
+    m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
+    m_Scene->m_Texts[scoreText1].m_Color = { 255, 165, 0 };
 }
 
 void MyGame::input(SDL_Event& event) {
@@ -212,11 +224,16 @@ void MyGame::input(SDL_Event& event) {
 void MyGame::update() {
     // Set local player location based on received data
     //player1.y = game_data.player1Y;
+    m_Scene->m_Transforms[player1].m_Rect.x = game_data.player1X;
     m_Scene->m_Transforms[player1].m_Rect.y = game_data.player1Y;
+    m_Scene->m_Transforms[player2].m_Rect.x = game_data.player2X;
     m_Scene->m_Transforms[player2].m_Rect.y = game_data.player2Y;
 
     m_Scene->m_Transforms[ball].m_Rect.x = game_data.ballX;
     m_Scene->m_Transforms[ball].m_Rect.y = game_data.ballY;
+
+    m_Scene->m_Texts[scoreText1].m_Text = "Player 1: " + std::to_string(game_data.score1);
+    m_Scene->m_Texts[scoreText2].m_Text = "Player 2: " + std::to_string(game_data.score2);
 
     update_kinematics(m_Scene, deltaTime);
 }

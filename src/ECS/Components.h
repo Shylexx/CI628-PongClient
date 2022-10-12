@@ -2,17 +2,18 @@
 #define __COMPS_H__
 
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include "../Maths.h"
 
 namespace ECS {
 	struct Transform
 	{
 		// Position in 2D Space
-		Vec2 m_Position;
+		Vec2f m_Position;
 		// Rotation in degrees
 		int m_Rotation;
 		// Scale on X and Y Axis
-		Vec2 m_Scale;
+		Vec2f m_Scale;
 
 		// SDL Rect for SDL functions
 		SDL_Rect m_Rect;
@@ -23,6 +24,12 @@ namespace ECS {
 		SDL_Texture* m_Sprite;
 		SDL_RendererFlip m_Flip = SDL_FLIP_NONE;
 		bool m_Visible = true;
+	};
+
+	struct Text {
+		std::string m_Text = "None";
+		TTF_Font* m_Font;
+		SDL_Color m_Color;
 	};
 
 	// Allows an Entity to be found by name rather than just tag
