@@ -184,7 +184,7 @@ void MyGame::send(std::string message) {
 }
 
 void MyGame::preload_assets() {
-    m_Assets->LoadFont("Score", "res/fonts/lato.ttf", 72);
+    m_Assets->LoadFont("Score", "res/fonts/lato.ttf", 32);
     m_Assets->loadTexture("Paddle", "res/sprites/paddle.png");
     m_Assets->loadTexture("Ball", "res/sprites/ball.png");
 }
@@ -192,22 +192,25 @@ void MyGame::preload_assets() {
 void MyGame::init_entities() {
     player1 = m_Scene->NewEntity();
     m_Scene->AddComponents(player1, CompTags::Transform | CompTags::Sprite);
-    m_Scene->m_Transforms[player1].m_Rect = { 200, 0, 20, 60 };
+    m_Scene->m_Transforms[player1].m_Position = { 200, 0 };
+    m_Scene->m_Transforms[player1].m_Scale = { 20, 60 };
     m_Scene->m_SpriteRenders[player1].m_Sprite = m_Assets->m_Textures.at("Paddle");
 
     player2 = m_Scene->NewEntity();
     m_Scene->AddComponents(player2, CompTags::Transform | CompTags::Sprite);
-    m_Scene->m_Transforms[player2].m_Rect = { 600, 0, 20, 60 };
+    m_Scene->m_Transforms[player2].m_Position = { 600, 0 };
+    m_Scene->m_Transforms[player2].m_Scale = { 20, 60 };
     m_Scene->m_SpriteRenders[player2].m_Sprite = m_Assets->m_Textures.at("Paddle");
 
     ball = m_Scene->NewEntity();
     m_Scene->AddComponents(ball, CompTags::Transform | CompTags::Sprite);
-    m_Scene->m_Transforms[ball].m_Rect = { 400, 300, 10, 10 };
+    m_Scene->m_Transforms[ball].m_Position = { 400, 300 };
+    m_Scene->m_Transforms[ball].m_Scale = { 10, 10 };
     m_Scene->m_SpriteRenders[ball].m_Sprite = m_Assets->m_Textures.at("Ball");
     
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText1].m_Rect = { 400, 300, 300, 300 };
+    m_Scene->m_Transforms[scoreText1].m_Position = { 200, 300 };
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
     m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
     m_Scene->m_Texts[scoreText1].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -215,7 +218,7 @@ void MyGame::init_entities() {
 
     scoreText2 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText2].m_Rect = { 500, 300, 300, 300 };
+    m_Scene->m_Transforms[scoreText1].m_Position = { 400, 300 };
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
     m_Scene->m_Texts[scoreText2].m_Font = m_Assets->m_Fonts.at("Score");
     m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -234,13 +237,13 @@ void MyGame::input(SDL_Event& event) {
 void MyGame::update() {
     // Set local player location based on received data
     //player1.y = game_data.player1Y;
-    m_Scene->m_Transforms[player1].m_Rect.x = game_data.player1X;
-    m_Scene->m_Transforms[player1].m_Rect.y = game_data.player1Y;
-    m_Scene->m_Transforms[player2].m_Rect.x = game_data.player2X;
-    m_Scene->m_Transforms[player2].m_Rect.y = game_data.player2Y;
+    m_Scene->m_Transforms[player1].m_Position.x = game_data.player1X;
+    m_Scene->m_Transforms[player1].m_Position.y = game_data.player1Y;
+    m_Scene->m_Transforms[player2].m_Position.x = game_data.player2X;
+    m_Scene->m_Transforms[player2].m_Position.y = game_data.player2Y;
 
-    m_Scene->m_Transforms[ball].m_Rect.x = game_data.ballX;
-    m_Scene->m_Transforms[ball].m_Rect.y = game_data.ballY;
+    m_Scene->m_Transforms[ball].m_Position.x = game_data.ballX;
+    m_Scene->m_Transforms[ball].m_Position.y = game_data.ballY;
 
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: " + std::to_string(game_data.score1);
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: " + std::to_string(game_data.score2);

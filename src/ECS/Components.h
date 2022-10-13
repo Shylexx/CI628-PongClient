@@ -10,14 +10,11 @@ namespace ECS {
 	struct Transform
 	{
 		// Position in 2D Space
-		Vec2f m_Position;
+		Vec2f m_Position = { 0, 0 };
 		// Rotation in degrees
-		int m_Rotation;
+		int m_Rotation = 0;
 		// Scale on X and Y Axis
-		Vec2f m_Scale;
-
-		// SDL Rect for SDL functions
-		SDL_Rect m_Rect;
+		Vec2f m_Scale = { 40, 40};
 	};
 
 	struct SpriteRender
@@ -30,7 +27,7 @@ namespace ECS {
 	struct Text {
 		std::string m_Text = "None";
 		TTF_Font* m_Font;
-		SDL_Color m_Color;
+		SDL_Color m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 	};
 
 	// Allows an Entity to be found by name rather than just tag

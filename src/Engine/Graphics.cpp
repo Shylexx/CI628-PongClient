@@ -38,21 +38,19 @@ void Graphics::Present() {
 }
 
 void Graphics::DrawScene(ECS::Scene* scene) {
-    for (Entity e = 0; e < MAX_ENTITIES; e++) {
-        if (!scene->HasComponents(e, CompTags::Transform)) { continue; }
+    //for (Entity e = 0; e < MAX_ENTITIES; e++) {
+    //    if (!scene->HasComponents(e, CompTags::Transform)) { continue; }
 
-        SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
-        SDL_RenderDrawRect(m_Renderer, &scene->m_Transforms[e].m_Rect);
-    }
+    //    //SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+    //    //SDL_RenderDrawRect(m_Renderer, &scene->m_Transforms[e].m_Rect);
+    //}
 
     // Render all sprites
     for (Entity e = 0; e < MAX_ENTITIES; e++) {
         if (!scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) { continue; }
 
         // drawsprites
-        if (&scene->m_SpriteRenders[e].m_Visible) {
-            DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
-        }
+        DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
     }
     // Draw all text components
     for (Entity e = 0; e < MAX_ENTITIES; e++) {
@@ -62,21 +60,22 @@ void Graphics::DrawScene(ECS::Scene* scene) {
     }
 }
 
-void Graphics::DrawTexture(SDL_Texture* texture, SDL_Rect* dest) {
-    SDL_RenderCopyEx(m_Renderer, texture, 0, dest, 0.0, 0, SDL_FLIP_NONE);
+void Graphics::DrawSprite(ECS::SpriteRender* sprite, ECS::Transform* transform, SDL_Rect* clip, SDL_Point* center) {
+    if (sprite->m_Visible) {
+        SDL_Rect renderQuad = { transform->m_Position.x, transform->m_Position.y, transform->m_Scale.x, transform->m_Scale.y };
+        SDL_RenderCopyEx(m_Renderer, sprite->m_Sprite, clip, &renderQuad, transform->m_Rotation, center, sprite->m_Flip);
+    }
 }
 
 void Graphics::DrawText(ECS::Text* text, ECS::Transform* transform) {
-    SDL_Texture* texture = TextureFromString(text->m_Text, text->m_Font, text->m_Color);
-    int width, height;
-    SDL_QueryTexture(texture, 0, 0, &width, &height);
-    SDL_Rect dest = { transform->m_Rect.x, transform->m_Rect.y, width, height };
-    DrawTexture(texture, &dest );
-    SDL_DestroyTexture(texture);
-}
-
-void Graphics::DrawSprite(ECS::SpriteRender* sprite, ECS::Transform* transform) {
-    DrawTexture(sprite->m_Sprite, &transform->m_Rect);
+    SDL_Texture* textTexture = TextureFromString(text->m_Text, text->m_Font, text->m_Color);
+    int w, h;
+    SDL_QueryTexture(textTexture, NULL, NULL, &w, &h);
+    transform->m_Scale.x = w;
+    transform->m_Scale.y = h;
+    SDL_Rect renderQuad = { transform->m_Position.x, transform->m_Position.y, transform->m_Scale.x, transform->m_Scale.y };
+    SDL_RenderCopyEx(m_Renderer, textTexture, NULL, &renderQuad, transform->m_Rotation, NULL, SDL_FLIP_NONE);
+    SDL_DestroyTexture(textTexture);
 }
 
 SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {
@@ -85,7 +84,7 @@ SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {
 
 SDL_Texture* Graphics::TextureFromString(const std::string& string, TTF_Font* font, SDL_Color color) {
     SDL_Texture * textTexture = nullptr;
-	SDL_Surface * textSurface = TTF_RenderText_Blended(font, string.c_str(), color);
+	SDL_Surface * textSurface = TTF_RenderText_Solid(font, string.c_str(), color);
 	if (textSurface != nullptr) {
 		textTexture = SDL_CreateTextureFromSurface(m_Renderer, textSurface);
 		SDL_FreeSurface(textSurface);
