@@ -210,7 +210,7 @@ void MyGame::init_entities() {
     
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText1].m_Position = { 200, 300 };
+    m_Scene->m_Transforms[scoreText1].m_Position = { 100, 100 };
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
     m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
     m_Scene->m_Texts[scoreText1].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -218,7 +218,7 @@ void MyGame::init_entities() {
 
     scoreText2 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText1].m_Position = { 400, 300 };
+    m_Scene->m_Transforms[scoreText2].m_Position = { 500, 100 };
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
     m_Scene->m_Texts[scoreText2].m_Font = m_Assets->m_Fonts.at("Score");
     m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -227,10 +227,17 @@ void MyGame::init_entities() {
 void MyGame::input(SDL_Event& event) {
     switch (event.key.keysym.sym) {
         case SDLK_w:
-            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId)+"W_DOWN"): (std::to_string(m_NetId)+"W_UP"));
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "W_DOWN") : (std::to_string(m_NetId)+"W_UP"));
             break;
-        case SDLK_s:
-            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId)+"S_DOWN"): (std::to_string(m_NetId)+"S_UP"));
+        /*case SDLK_s:
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "S_DOWN") : (std::to_string(m_NetId) + "S_UP"));
+            break;*/
+        case SDLK_a:
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "A_DOWN") : (std::to_string(m_NetId) + "A_UP"));
+            break;
+        case SDLK_d:
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "D_DOWN") : (std::to_string(m_NetId) + "D_UP"));
+            break;
     }
 }
 
