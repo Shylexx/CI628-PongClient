@@ -53,11 +53,8 @@ MyGame::MyGame() {
     // Engine Init
 
     m_Graphics = std::make_shared<Graphics>();
-    m_Assets = std::make_shared<AssetManager>();
 
     m_Graphics->Init();
-
-    m_Assets->Init(m_Graphics);
 
     m_Scene = new ECS::Scene();
 
@@ -118,7 +115,7 @@ void MyGame::cleanup() {
     // Cleanup the ECS Scene
     m_Scene->Cleanup();
 
-    m_Assets->Cleanup();
+    AssetManager::Cleanup();
 
     m_Graphics->Cleanup();
 
@@ -184,9 +181,9 @@ void MyGame::send(std::string message) {
 }
 
 void MyGame::preload_assets() {
-    m_Assets->LoadFont("Score", "res/fonts/lato.ttf", 32);
-    m_Assets->loadTexture("Paddle", "res/sprites/paddle.png");
-    m_Assets->loadTexture("Ball", "res/sprites/ball.png");
+    AssetManager::LoadFont("Score", "res/fonts/lato.ttf", 32);
+    AssetManager::loadTexture("Paddle", "res/sprites/paddle.png", m_Graphics.get());
+    AssetManager::loadTexture("Ball", "res/sprites/ball.png", m_Graphics.get());
 }
 
 void MyGame::init_entities() {
@@ -194,25 +191,25 @@ void MyGame::init_entities() {
     m_Scene->AddComponents(player1, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[player1].m_Position = { 200, 0 };
     m_Scene->m_Transforms[player1].m_Scale = { 20, 60 };
-    m_Scene->m_SpriteRenders[player1].m_Sprite = m_Assets->m_Textures.at("Paddle");
+    m_Scene->m_SpriteRenders[player1].m_Sprite = AssetManager::Textures.at("Paddle");
 
     player2 = m_Scene->NewEntity();
     m_Scene->AddComponents(player2, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[player2].m_Position = { 600, 0 };
     m_Scene->m_Transforms[player2].m_Scale = { 20, 60 };
-    m_Scene->m_SpriteRenders[player2].m_Sprite = m_Assets->m_Textures.at("Paddle");
+    m_Scene->m_SpriteRenders[player2].m_Sprite = AssetManager::Textures.at("Paddle");
 
     ball = m_Scene->NewEntity();
     m_Scene->AddComponents(ball, CompTags::Transform | CompTags::Sprite);
     m_Scene->m_Transforms[ball].m_Position = { 400, 300 };
     m_Scene->m_Transforms[ball].m_Scale = { 10, 10 };
-    m_Scene->m_SpriteRenders[ball].m_Sprite = m_Assets->m_Textures.at("Ball");
+    m_Scene->m_SpriteRenders[ball].m_Sprite = AssetManager::Textures.at("Ball");
     
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
     m_Scene->m_Transforms[scoreText1].m_Position = { 100, 100 };
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
-    m_Scene->m_Texts[scoreText1].m_Font = m_Assets->m_Fonts.at("Score");
+    m_Scene->m_Texts[scoreText1].m_Font = AssetManager::Fonts.at("Score");
     m_Scene->m_Texts[scoreText1].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 
 
@@ -220,7 +217,7 @@ void MyGame::init_entities() {
     m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
     m_Scene->m_Transforms[scoreText2].m_Position = { 500, 100 };
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
-    m_Scene->m_Texts[scoreText2].m_Font = m_Assets->m_Fonts.at("Score");
+    m_Scene->m_Texts[scoreText2].m_Font = AssetManager::Fonts.at("Score");
     m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 }
 

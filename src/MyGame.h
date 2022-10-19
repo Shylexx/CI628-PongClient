@@ -61,7 +61,6 @@ class MyGame {
         ECS::Scene* m_Scene;
 
         std::shared_ptr<Graphics> m_Graphics;
-        std::shared_ptr<AssetManager> m_Assets;
 
         int m_NetId;
 

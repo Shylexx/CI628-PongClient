@@ -8,17 +8,14 @@
 #include "../Engine/Graphics.h"
 
 class AssetManager {
-private:
-	std::shared_ptr<Graphics> m_Gfx;
 public:
-	std::unordered_map<std::string, SDL_Texture*> m_Textures;
-	std::unordered_map<std::string, TTF_Font*> m_Fonts;
-	void Init(std::shared_ptr<Graphics> gfx);
-	void Cleanup();
+	static std::unordered_map<std::string, SDL_Texture*> Textures;
+	static std::unordered_map<std::string, TTF_Font*> Fonts;
+	static void Cleanup();
 	// Should return a map object
-	void loadMap(const std::string& filepath);
-	void loadTexture(std::string tag, const std::string& filepath);
-	void LoadFont(std::string tag, const std::string& filepath, const int& size);
+	static void loadMap(const std::string& filepath);
+	static void loadTexture(std::string tag, const std::string& filepath, Graphics* graphics);
+	static void LoadFont(std::string tag, const std::string& filepath, const int& size);
 };
 
 #endif
