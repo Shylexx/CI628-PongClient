@@ -153,13 +153,11 @@ void MyGame::callback_on_connect(std::vector<std::string>& args) {
 
 void MyGame::callback_game_recv(std::vector<std::string>& args) {
         // we should have exactly 6 arguments
-        if (args.size() == 6) {
+        if (args.size() == 4) {
             game_data.player1X = stoi(args.at(0));
             game_data.player1Y = stoi(args.at(1));
             game_data.player2X = stoi(args.at(2));
             game_data.player2Y = stoi(args.at(3));
-            game_data.ballX = stoi(args.at(4));
-            game_data.ballY = stoi(args.at(5));
         }
         else {
             std::cerr << "Invalid Game State data received!" << std::endl;

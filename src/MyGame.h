@@ -23,8 +23,6 @@ static struct GameData {
     int player1Y = 0;
     int player2X = 0;
     int player2Y = 0;
-    int ballX = 0;
-    int ballY = 0;
     int score1 = 0;
     int score2 = 0;
 } game_data;
@@ -35,7 +33,6 @@ class MyGame {
         //SDL_Rect player1 = { 0, 0, 20, 60 };
         Entity player1;
         Entity player2;
-        Entity ball;
         Entity scoreText1;
         Entity scoreText2;
         
