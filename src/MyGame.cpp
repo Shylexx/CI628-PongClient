@@ -35,8 +35,12 @@ MyGame::MyGame() {
         exit(4);
     }
 
-    SDL_CreateThread(Net::on_receive, "ConnectionReceiveThread", (void*)this);
-    SDL_CreateThread(Net::on_send, "ConnectionSendThread", (void*)this);
+    m_UDPClient.Connect("localhost", 8888, 0);
+
+    SDL_CreateThread(Net::on_receive_tcp, "ConnectionReceiveThread", (void*)this);
+    SDL_CreateThread(Net::on_send_tcp, "ConnectionSendThread", (void*)this);
+
+    SDL_CreateThread(Net::send_udp_packets, "UDPSendThread", (void*)this);
 
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         printf("SDL Image failed to load!");
@@ -178,6 +182,10 @@ void MyGame::send(std::string message) {
     m_Messages.push_back(message);
 }
 
+void MyGame::send_udp(std::string message) {
+    m_UDPClient.m_Messages.push_back(message);
+}
+
 void MyGame::preload_assets() {
     AssetManager::LoadFont("Score", "res/fonts/lato.ttf", 32);
     AssetManager::loadTexture("Paddle", "res/sprites/paddle.png", m_Graphics.get());
@@ -197,12 +205,6 @@ void MyGame::init_entities() {
     m_Scene->m_Transforms[player2].m_Scale = { 20, 60 };
     m_Scene->m_SpriteRenders[player2].m_Sprite = AssetManager::Textures.at("Paddle");
 
-    ball = m_Scene->NewEntity();
-    m_Scene->AddComponents(ball, CompTags::Transform | CompTags::Sprite);
-    m_Scene->m_Transforms[ball].m_Position = { 400, 300 };
-    m_Scene->m_Transforms[ball].m_Scale = { 10, 10 };
-    m_Scene->m_SpriteRenders[ball].m_Sprite = AssetManager::Textures.at("Ball");
-    
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
     m_Scene->m_Transforms[scoreText1].m_Position = { 100, 100 };
@@ -233,6 +235,8 @@ void MyGame::input(SDL_Event& event) {
         case SDLK_d:
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "D_DOWN") : (std::to_string(m_NetId) + "D_UP"));
             break;
+        case SDLK_j:
+          send_udp(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "J_DOWN") : (std::to_string(m_NetId) + "J_UP"));
     }
 }
 
@@ -243,9 +247,6 @@ void MyGame::update() {
     m_Scene->m_Transforms[player1].m_Position.y = game_data.player1Y;
     m_Scene->m_Transforms[player2].m_Position.x = game_data.player2X;
     m_Scene->m_Transforms[player2].m_Position.y = game_data.player2Y;
-
-    m_Scene->m_Transforms[ball].m_Position.x = game_data.ballX;
-    m_Scene->m_Transforms[ball].m_Position.y = game_data.ballY;
 
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: " + std::to_string(game_data.score1);
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: " + std::to_string(game_data.score2);

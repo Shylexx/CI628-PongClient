@@ -2,7 +2,8 @@
 #define __NET_FNS__
 
 namespace Net {
-	int on_send(void* engine);
-	int on_receive(void* engine);
+	int on_send_tcp(void* engine);
+	int on_receive_tcp(void* engine);
+	int send_udp_packets(void* engine);
 }
 #endif

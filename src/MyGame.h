@@ -11,11 +11,13 @@
 #include "Engine/Graphics.h"
 #include "ECS/ECS.h"
 #include "Engine/AssetManager.h"
+#include "Net/UDPClient.h"
 
 // Forward Declare networking functions
 namespace Net {
-    int on_send(void* engine);
-    int on_receive(void* engine);
+    int on_send_tcp(void* engine);
+    int on_receive_tcp(void* engine);
+    int send_udp_packets(void* engine);
 }
 
 static struct GameData {
@@ -68,6 +70,8 @@ class MyGame {
         
         void cleanup();
 
+        Net::UDPClient m_UDPClient;
+
         // Networking functions
         // Runs when we send a message to the server from the client
         void callback_game_send();
@@ -79,6 +83,8 @@ class MyGame {
         void callback_update_scores(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
+        // Queues a message to be sent in the next UDP packet
+        void send_udp(std::string message);
 
         // Accessors for private members
         TCPsocket GetSocket() { return m_Socket; }

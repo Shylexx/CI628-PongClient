@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace Net {
-	int on_receive(void* engine) {
+	int on_receive_tcp(void* engine) {
         MyGame* engineptr = static_cast<MyGame*>(engine);
         TCPsocket socket = engineptr->GetSocket();
 
@@ -53,7 +53,7 @@ namespace Net {
         } while (received > 0 && !engineptr->ShouldQuit());
 	}
 
-	int on_send(void* engine) {
+	int on_send_tcp(void* engine) {
         MyGame* engineptr = static_cast<MyGame*>(engine);
         TCPsocket socket = engineptr->GetSocket();
 
@@ -80,4 +80,33 @@ namespace Net {
 
         return 0;
 	}
+
+  int send_udp_packets(void* engine) {
+    MyGame* engineptr = static_cast<MyGame*>(engine);
+    UDPsocket& socket = engineptr->m_UDPClient.Socket();
+
+    while (!engineptr->ShouldQuit()) {
+      if (engineptr->m_UDPClient.m_Messages.size() > 0) {
+         
+        std::string message = "TEST PACKET";
+
+        //for (auto m : engineptr->m_UDPClient.m_Messages) {
+        //  message += "," + m;
+        //}
+
+        engineptr->m_UDPClient.m_Messages.clear();
+
+        std::cout << "Sending UDP Message: " << message << std::endl;
+
+        memcpy(engineptr->m_UDPClient.m_Packet->data, message.c_str(), message.size());
+        engineptr->m_UDPClient.m_Packet->len = message.size();
+        SDLNet_UDP_Send(socket, -1, engineptr->m_UDPClient.m_Packet);
+
+        std::cout << "with String data: " << engineptr->m_UDPClient.m_Packet->data << " and size: " << message.size() << std::endl;
+        std::cout << "Packet size is: " << engineptr->m_UDPClient.m_Packet->len << std::endl;
+      }
+    }
+
+    return 0;
+  }
 }
