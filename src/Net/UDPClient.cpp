@@ -15,6 +15,7 @@ namespace Net {
 			return;
 		}
 		else {
+			std::cout << "Local Address: " << m_pLocalIP->host << std::endl;
 			std::cout << "Local Port: " << m_pLocalIP->port << std::endl;
 		}
 
@@ -22,13 +23,6 @@ namespace Net {
 		m_RecvPacket = SDLNet_AllocPacket(512);
 		if (!m_RecvPacket) {
 			std::cerr << "Could not allocate Receive UDP Packet" << std::endl;
-			return;
-		}
-
-		// Set up recv socket
-		m_RecvSocket = SDLNet_UDP_Open(m_pLocalIP->port);
-		if (!m_RecvSocket) {
-			std::cerr << "Could not open Receive UDP Socket" << std::endl;
 			return;
 		}
 
@@ -54,5 +48,6 @@ namespace Net {
 	UDPClient::~UDPClient() {
 		SDLNet_FreePacket(m_Packet);
 		SDLNet_FreePacket(m_RecvPacket);
+		SDLNet_UDP_Close(m_Socket);
 	}
 }

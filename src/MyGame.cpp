@@ -41,6 +41,7 @@ MyGame::MyGame() {
     SDL_CreateThread(Net::on_send_tcp, "ConnectionSendThread", (void*)this);
 
     SDL_CreateThread(Net::send_udp_packets, "UDPSendThread", (void*)this);
+    SDL_CreateThread(Net::recv_udp_packet, "UDPRecvThread", (void*)this);
 
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         printf("SDL Image failed to load!");
@@ -236,7 +237,9 @@ void MyGame::input(SDL_Event& event) {
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "D_DOWN") : (std::to_string(m_NetId) + "D_UP"));
             break;
         case SDLK_j:
-          send_udp(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "J_DOWN") : (std::to_string(m_NetId) + "J_UP"));
+          if (event.type == SDL_KEYDOWN) {
+            send_udp(std::to_string(m_NetId) + "J_DOWN");
+          }
     }
 }
 

@@ -13,7 +13,6 @@ namespace Net {
 		UDPpacket* m_RecvPacket;
 
 		UDPsocket& Socket() { return m_Socket; }
-		UDPsocket& RecvSocket() { return m_RecvSocket; }
 		UDPpacket* SendPacket() { return m_Packet; }
 		UDPpacket* RecvPacket() { return m_RecvPacket; }
 		std::vector<std::string> Messages() { return m_Messages; }
@@ -21,7 +20,6 @@ namespace Net {
 		std::vector<std::string> m_Messages;
 	private:
 		UDPsocket m_Socket;
-		UDPsocket m_RecvSocket;
 		IPaddress m_ServerIP;
 		IPaddress* m_pServerIP;
 		IPaddress* m_pLocalIP;

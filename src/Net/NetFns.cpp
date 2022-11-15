@@ -109,4 +109,20 @@ namespace Net {
 
     return 0;
   }
+
+  int recv_udp_packet(void* engine) {
+    MyGame* engineptr = static_cast<MyGame*>(engine);
+    UDPsocket& socket = engineptr->m_UDPClient.Socket();
+
+    while (!engineptr->ShouldQuit()) {
+      if (SDLNet_UDP_Recv(socket, engineptr->m_UDPClient.m_RecvPacket)) {
+        std::cout << "Received UDP Packet from " << engineptr->m_UDPClient.m_RecvPacket->address.host << " port: " << engineptr->m_UDPClient.m_RecvPacket->address.port << std::endl;
+        std::string message((char*)engineptr->m_UDPClient.m_RecvPacket->data);
+        std::cout << message << std::endl;
+        std::cout << "End of UDP Data" << std::endl;
+      }
+    }
+
+    return 0;
+  }
 }

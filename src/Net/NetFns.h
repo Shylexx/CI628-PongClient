@@ -5,5 +5,6 @@ namespace Net {
 	int on_send_tcp(void* engine);
 	int on_receive_tcp(void* engine);
 	int send_udp_packets(void* engine);
+	int recv_udp_packet(void* engine);
 }
 #endif
