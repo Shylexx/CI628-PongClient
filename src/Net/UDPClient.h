@@ -7,7 +7,7 @@
 namespace Net {
 	class UDPClient {
 	public:
-		void Connect(const std::string& ip, int32_t remotePort, int32_t localPort);
+		UDPClient(const std::string& ip, int32_t remotePort, int32_t localPort);
 		~UDPClient();
 		UDPpacket* m_Packet;
 		UDPpacket* m_RecvPacket;

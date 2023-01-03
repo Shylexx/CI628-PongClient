@@ -17,8 +17,6 @@
 namespace Net {
     int on_send_tcp(void* engine);
     int on_receive_tcp(void* engine);
-    int send_udp_packets(void* engine);
-    int recv_udp_packet(void* engine);
 }
 
 static struct GameData {
@@ -38,6 +36,7 @@ class MyGame {
         Entity player2;
         Entity scoreText1;
         Entity scoreText2;
+        Entity level;
         
         const char* IP_NAME = "localhost";
         const Uint16 PORT = 55555;
@@ -62,7 +61,7 @@ class MyGame {
 
         std::shared_ptr<Graphics> m_Graphics;
 
-        int m_NetId;
+        int m_NetId = 0;
 
     public:
         MyGame();
@@ -70,8 +69,6 @@ class MyGame {
         int run();
         
         void cleanup();
-
-        Net::UDPClient m_UDPClient;
 
         // Networking functions
         // Runs when we send a message to the server from the client
@@ -82,10 +79,12 @@ class MyGame {
         void callback_on_connect(std::vector<std::string>& args);
         // updates the scores when a player scores
         void callback_update_scores(std::vector<std::string>& args);
+        // loads a level when new level data is received
+        void callback_load_level(std::vector<std::string>& args);
+        // updates tiles in an already loaded level
+        void callback_update_level(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
-        // Queues a message to be sent in the next UDP packet
-        void send_udp(std::string message);
 
         // Accessors for private members
         TCPsocket GetSocket() { return m_Socket; }

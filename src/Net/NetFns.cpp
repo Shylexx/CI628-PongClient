@@ -45,6 +45,12 @@ namespace Net {
             else if (cmd == "SCORES") {
                 engineptr->callback_update_scores(args);
             }
+            else if (cmd == "MAP_DATA") {
+              engineptr->callback_load_level(args);
+            }
+            else if (cmd == "MAP_DATA") {
+              engineptr->callback_update_level(args);
+            }
 
             if (cmd == "exit") {
                 break;
@@ -81,48 +87,4 @@ namespace Net {
         return 0;
 	}
 
-  int send_udp_packets(void* engine) {
-    MyGame* engineptr = static_cast<MyGame*>(engine);
-    UDPsocket& socket = engineptr->m_UDPClient.Socket();
-
-    while (!engineptr->ShouldQuit()) {
-      if (engineptr->m_UDPClient.m_Messages.size() > 0) {
-         
-        std::string message = "TEST PACKET";
-
-        //for (auto m : engineptr->m_UDPClient.m_Messages) {
-        //  message += "," + m;
-        //}
-
-        engineptr->m_UDPClient.m_Messages.clear();
-
-        std::cout << "Sending UDP Message: " << message << std::endl;
-
-        memcpy(engineptr->m_UDPClient.m_Packet->data, message.c_str(), message.size());
-        engineptr->m_UDPClient.m_Packet->len = message.size();
-        SDLNet_UDP_Send(socket, -1, engineptr->m_UDPClient.m_Packet);
-
-        std::cout << "with String data: " << engineptr->m_UDPClient.m_Packet->data << " and size: " << message.size() << std::endl;
-        std::cout << "Packet size is: " << engineptr->m_UDPClient.m_Packet->len << std::endl;
-      }
-    }
-
-    return 0;
-  }
-
-  int recv_udp_packet(void* engine) {
-    MyGame* engineptr = static_cast<MyGame*>(engine);
-    UDPsocket& socket = engineptr->m_UDPClient.Socket();
-
-    while (!engineptr->ShouldQuit()) {
-      if (SDLNet_UDP_Recv(socket, engineptr->m_UDPClient.m_RecvPacket)) {
-        std::cout << "Received UDP Packet from " << engineptr->m_UDPClient.m_RecvPacket->address.host << " port: " << engineptr->m_UDPClient.m_RecvPacket->address.port << std::endl;
-        std::string message((char*)engineptr->m_UDPClient.m_RecvPacket->data);
-        std::cout << message << std::endl;
-        std::cout << "End of UDP Data" << std::endl;
-      }
-    }
-
-    return 0;
-  }
 }

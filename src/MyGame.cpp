@@ -35,13 +35,8 @@ MyGame::MyGame() {
         exit(4);
     }
 
-    m_UDPClient.Connect("localhost", 8888, 0);
-
     SDL_CreateThread(Net::on_receive_tcp, "ConnectionReceiveThread", (void*)this);
     SDL_CreateThread(Net::on_send_tcp, "ConnectionSendThread", (void*)this);
-
-    SDL_CreateThread(Net::send_udp_packets, "UDPSendThread", (void*)this);
-    SDL_CreateThread(Net::recv_udp_packet, "UDPRecvThread", (void*)this);
 
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         printf("SDL Image failed to load!");
@@ -179,12 +174,21 @@ void MyGame::callback_update_scores(std::vector<std::string>& args) {
     }
 }
 
-void MyGame::send(std::string message) {
-    m_Messages.push_back(message);
+void MyGame::callback_load_level(std::vector<std::string>& args) {
+
+
 }
 
-void MyGame::send_udp(std::string message) {
-    m_UDPClient.m_Messages.push_back(message);
+void MyGame::callback_update_level(std::vector<std::string>& args) {
+  if (args.size() % 3 == 0) {
+    for (int i = 0; i < args.size() - 2; i + 3) {
+      m_Scene->m_Tilemaps[level].setTile(static_cast<ECS::TileType>(std::stoi(args[i])), std::stoi(args[i+1]), std::stoi(args[i + 2]));
+    }
+  }
+}
+
+void MyGame::send(std::string message) {
+    m_Messages.push_back(message);
 }
 
 void MyGame::preload_assets() {
@@ -220,6 +224,10 @@ void MyGame::init_entities() {
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
     m_Scene->m_Texts[scoreText2].m_Font = AssetManager::Fonts.at("Score");
     m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+    level = m_Scene->NewEntity();
+    m_Scene->AddComponents(level, CompTags::Tilemap | CompTags::Transform);
+    m_Scene->m_Tilemaps[level].setEmpty();
 }
 
 void MyGame::input(SDL_Event& event) {
@@ -227,19 +235,18 @@ void MyGame::input(SDL_Event& event) {
         case SDLK_w:
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "W_DOWN") : (std::to_string(m_NetId)+"W_UP"));
             break;
-        /*case SDLK_s:
+        case SDLK_s:
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "S_DOWN") : (std::to_string(m_NetId) + "S_UP"));
-            break;*/
+            break;
         case SDLK_a:
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "A_DOWN") : (std::to_string(m_NetId) + "A_UP"));
             break;
         case SDLK_d:
             send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "D_DOWN") : (std::to_string(m_NetId) + "D_UP"));
             break;
-        case SDLK_j:
-          if (event.type == SDL_KEYDOWN) {
-            send_udp(std::to_string(m_NetId) + "J_DOWN");
-          }
+        case SDLK_SPACE:
+            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "SPACE_DOWN") : (std::to_string(m_NetId) + "SPACE_UP"));
+            break;
     }
 }
 
@@ -254,7 +261,6 @@ void MyGame::update() {
     m_Scene->m_Texts[scoreText1].m_Text = "Player 1: " + std::to_string(game_data.score1);
     m_Scene->m_Texts[scoreText2].m_Text = "Player 2: " + std::to_string(game_data.score2);
 
-    update_kinematics(m_Scene, deltaTime);
 }
 
 void MyGame::render() {

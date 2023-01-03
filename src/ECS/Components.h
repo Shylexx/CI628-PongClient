@@ -63,5 +63,26 @@ namespace ECS {
 		float m_CurJumpForce = 0.0f;
 		bool m_Grounded = true;
 	};
+
+	enum TileType {
+		EMPTY = 0,
+		WALL = 1,
+	};
+
+	struct Tilemap {
+		TileType m_Tiles[10][10];
+
+		void setEmpty() {
+			for (auto& row : m_Tiles) {
+				for (auto& tile : row) {
+					tile = EMPTY;
+				}
+			}
+		}
+
+		void setTile(TileType type, int x, int y) {
+			m_Tiles[y][x] = type;
+		}
+	};
 }
 #endif

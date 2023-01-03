@@ -2,7 +2,7 @@
 #include <iostream>
 
 namespace Net {
-	void UDPClient::Connect(const std::string& ip, int32_t remotePort, int32_t localPort) {
+	UDPClient::UDPClient(const std::string& ip, int32_t remotePort, int32_t localPort) {
 		std::cout << "Connecting to IP: " << ip << " Port: " << remotePort << std::endl;
 		if (!(m_Socket = SDLNet_UDP_Open(0))) {
 			std::cerr << "Could not create UDP Socket!" << std::endl;

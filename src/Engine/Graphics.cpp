@@ -78,6 +78,9 @@ void Graphics::DrawText(ECS::Text* text, ECS::Transform* transform) {
     SDL_DestroyTexture(textTexture);
 }
 
+void Graphics::DrawLevel(ECS::Tilemap* map, ECS::Transform* transform) {
+}
+
 SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(m_Renderer, surface);
 }
