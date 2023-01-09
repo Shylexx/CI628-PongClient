@@ -201,8 +201,10 @@ void MyGame::callback_load_level(std::vector<std::string>& args) {
 
 void MyGame::callback_update_level(std::vector<std::string>& args) {
   if (args.size() % 3 == 0) {
-    for (int i = 0; i < args.size() - 2; i + 3) {
+  std::cout << "Updating level!" << std::endl;
+    for (int i = 0; i < args.size() / 3; i += 3) {
       m_Scene->m_Tilemaps[level].setTile(static_cast<ECS::TileType>(std::stoi(args[i])), std::stoi(args[i+1]), std::stoi(args[i + 2]));
+     //std::cout << "Update info - New tile type: " << std::stoi(args[i]) << " at coords: X - " << args[i + 1] << " Y - " << args[i + 2] << std::endl;
     }
   }
 }
@@ -226,6 +228,7 @@ void MyGame::preload_assets() {
     AssetManager::loadTexture("Wall", "res/sprites/walltile.png", m_Graphics.get());
     AssetManager::loadTexture("Empty", "res/sprites/floortile.png", m_Graphics.get());
     AssetManager::loadTexture("Player", "res/sprites/playersprite.png", m_Graphics.get());
+    AssetManager::loadTexture("Bullet", "res/sprites/bulletsprite.png", m_Graphics.get());
 }
 
 void MyGame::init_entities() {
@@ -243,16 +246,16 @@ void MyGame::init_entities() {
 
     scoreText1 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText1, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText1].m_Position = { 100, 100 };
-    m_Scene->m_Texts[scoreText1].m_Text = "Player 1: 0";
+    m_Scene->m_Transforms[scoreText1].m_Position = { 500, 100 };
+    m_Scene->m_Texts[scoreText1].m_Text = "Player 2: 0";
     m_Scene->m_Texts[scoreText1].m_Font = AssetManager::Fonts.at("Score");
     m_Scene->m_Texts[scoreText1].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 
 
     scoreText2 = m_Scene->NewEntity();
     m_Scene->AddComponents(scoreText2, CompTags::Text | CompTags::Transform);
-    m_Scene->m_Transforms[scoreText2].m_Position = { 500, 100 };
-    m_Scene->m_Texts[scoreText2].m_Text = "Player 2: 0";
+    m_Scene->m_Transforms[scoreText2].m_Position = { 100, 100 };
+    m_Scene->m_Texts[scoreText2].m_Text = "Player 1: 0";
     m_Scene->m_Texts[scoreText2].m_Font = AssetManager::Fonts.at("Score");
     m_Scene->m_Texts[scoreText2].m_Color = { 0xFF, 0xFF, 0xFF, 0xFF };
 
@@ -302,8 +305,10 @@ void MyGame::input(SDL_Event& event) {
             }
             break;
         case SDLK_SPACE:
-            send(event.type == SDL_KEYDOWN ? (std::to_string(m_NetId) + "SPACE_DOWN") : (std::to_string(m_NetId) + "SPACE_UP"));
-            break;
+						if (event.type == SDL_KEYDOWN) {
+							send(std::to_string(m_NetId) + "F_DOWN");
+						}
+						break;
     }
 }
 
@@ -315,8 +320,8 @@ void MyGame::update() {
     m_Scene->m_Transforms[player2].m_Position.x = game_data.player2X;
     m_Scene->m_Transforms[player2].m_Position.y = game_data.player2Y;
 
-    m_Scene->m_Texts[scoreText1].m_Text = "Player 1: " + std::to_string(game_data.score1);
-    m_Scene->m_Texts[scoreText2].m_Text = "Player 2: " + std::to_string(game_data.score2);
+    m_Scene->m_Texts[scoreText2].m_Text = "Player 1: " + std::to_string(game_data.score2);
+    m_Scene->m_Texts[scoreText1].m_Text = "Player 2: " + std::to_string(game_data.score1);
 
 }
 

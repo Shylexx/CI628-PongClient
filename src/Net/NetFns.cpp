@@ -35,8 +35,8 @@ namespace Net {
                 }
             }
 
-//            std::cout << "cmd recv: " << cmd << std::endl;
-//            std::cout << "arg size: " << args.size() << std::endl;
+            std::cout << "cmd recv: " << cmd << std::endl;
+            std::cout << "arg size: " << args.size() << std::endl;
 
    
             if (cmd == "GAME_DATA") {
