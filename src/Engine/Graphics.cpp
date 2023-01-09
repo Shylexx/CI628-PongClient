@@ -45,6 +45,13 @@ void Graphics::DrawScene(ECS::Scene* scene) {
     //    //SDL_RenderDrawRect(m_Renderer, &scene->m_Transforms[e].m_Rect);
     //}
 
+    // Draw the level first!
+    for (Entity e = 0; e < MAX_ENTITIES; e++) {
+        if (!scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) { continue; }
+
+        DrawLevel(&scene->m_Tilemaps[e], &scene->m_Transforms[e]);
+    }
+
     // Render all sprites
     for (Entity e = 0; e < MAX_ENTITIES; e++) {
         if (!scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) { continue; }
@@ -79,6 +86,27 @@ void Graphics::DrawText(ECS::Text* text, ECS::Transform* transform) {
 }
 
 void Graphics::DrawLevel(ECS::Tilemap* map, ECS::Transform* transform) {
+	for (int y = 0; y < map->m_Tiles.size(); y++) {
+		for (int x = 0; x < map->m_Tiles[y].size(); x++) {
+			SDL_Texture* sprite = nullptr;
+			switch (map->m_Tiles[y][x]) {
+			case ECS::EMPTY:
+				sprite = map->m_EmptyTexture;
+				break;
+			case ECS::WALL:
+				sprite = map->m_WallTexture;
+				break;
+			default:
+				break;
+			}
+			DrawTile(sprite, x, y);
+		}
+	}
+}
+
+void Graphics::DrawTile(SDL_Texture* sprite, int x, int y) {
+  SDL_Rect renderQuad = { x * ECS::TILE_WIDTH, y * ECS::TILE_HEIGHT, ECS::TILE_WIDTH, ECS::TILE_HEIGHT };
+  SDL_RenderCopyEx(m_Renderer, sprite, NULL, &renderQuad, 0, NULL, SDL_FLIP_NONE);
 }
 
 SDL_Texture* Graphics::TextureFromSurface(SDL_Surface* surface) {

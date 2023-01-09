@@ -47,12 +47,13 @@ void AssetManager::loadTexture(std::string tag, const std::string& path, Graphic
     }
 
     Textures.insert(std::pair<std::string, SDL_Texture*>(tag,newTexture));
+    SDL_Log("Loaded font %s", tag.c_str());
 }
 
 void AssetManager::LoadFont(std::string tag, const std::string& filepath, const int& size) {
     TTF_Font * font = TTF_OpenFont(filepath.c_str(), size);
     if (nullptr == font)
         std::cerr << "Could not open font at path: " << filepath << std::endl;
-	Fonts[tag] = font;
+	  Fonts[tag] = font;
     SDL_Log("Loaded font %s", tag.c_str());
 }

@@ -69,8 +69,13 @@ namespace ECS {
 		WALL = 1,
 	};
 
+	static const int TILE_WIDTH = 16;
+	static const int TILE_HEIGHT = 16;
+
 	struct Tilemap {
-		TileType m_Tiles[10][10];
+		std::vector<std::vector<TileType>> m_Tiles;
+		SDL_Texture* m_WallTexture = nullptr;
+		SDL_Texture* m_EmptyTexture = nullptr;
 
 		void setEmpty() {
 			for (auto& row : m_Tiles) {

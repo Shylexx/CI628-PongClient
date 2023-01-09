@@ -83,6 +83,9 @@ class MyGame {
         void callback_load_level(std::vector<std::string>& args);
         // updates tiles in an already loaded level
         void callback_update_level(std::vector<std::string>& args);
+        // bullet spawning and ending callbacks
+        void callback_spawn_entity(std::vector<std::string>& args);
+        void callback_kill_entity(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
 

@@ -9,7 +9,7 @@ namespace Net {
         MyGame* engineptr = static_cast<MyGame*>(engine);
         TCPsocket socket = engineptr->GetSocket();
 
-        const int message_length = 1024;
+        const int message_length = 4096;
 
         char message[message_length];
         int received;
@@ -35,9 +35,18 @@ namespace Net {
                 }
             }
 
+//            std::cout << "cmd recv: " << cmd << std::endl;
+//            std::cout << "arg size: " << args.size() << std::endl;
+
    
             if (cmd == "GAME_DATA") {
                 engineptr->callback_game_recv(args);
+            }
+            else if (cmd == "SPAWN_ENTITY") {
+              engineptr->callback_spawn_entity(args);
+            }
+            else if (cmd == "KILL_ENTITY") {
+              engineptr->callback_kill_entity(args);
             }
             else if (cmd == "ON_CONNECT") {
                 engineptr->callback_on_connect(args);
@@ -45,10 +54,10 @@ namespace Net {
             else if (cmd == "SCORES") {
                 engineptr->callback_update_scores(args);
             }
-            else if (cmd == "MAP_DATA") {
+            else if (cmd == "LEVEL_DATA") {
               engineptr->callback_load_level(args);
             }
-            else if (cmd == "MAP_DATA") {
+            else if (cmd == "LEVEL_UPDATE") {
               engineptr->callback_update_level(args);
             }
 
