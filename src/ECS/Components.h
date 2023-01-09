@@ -5,6 +5,7 @@
 #include "SDL_ttf.h"
 #include "../Maths.h"
 #include <memory>
+#include <cmath>
 
 namespace ECS {
 	struct Transform
