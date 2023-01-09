@@ -54,6 +54,7 @@ class MyGame {
         std::array<Entity, 40> bullets;
         void spawn_bullet(ECS::Transform transform, ECS::BulletDir dir);
         void update_bullet(Entity bullet);
+        void kill_bullet(Entity bullet);
 
         // Timekeeping
         uint64_t m_Now = SDL_GetPerformanceCounter();

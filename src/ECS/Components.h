@@ -89,6 +89,10 @@ namespace ECS {
 			m_Tiles[y][x] = type;
 		}
 
+		TileType tileFromWorld(int x, int y) {
+			return m_Tiles[ceil(y / TILE_HEIGHT)][ceil(x / TILE_WIDTH)];
+		}
+
 	};
 
 		enum BulletDir {

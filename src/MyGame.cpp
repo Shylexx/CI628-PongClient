@@ -197,7 +197,6 @@ void MyGame::callback_load_level(std::vector<std::string>& args) {
 
 void MyGame::callback_update_level(std::vector<std::string>& args) {
 	if (args.size() % 3 == 0) {
-		std::cout << "Updating level!" << std::endl;
 		for (int i = 0; i < args.size() / 3; i += 3) {
 			m_Scene->m_Tilemaps[level].setTile(static_cast<ECS::TileType>(std::stoi(args[i])), std::stoi(args[i + 1]), std::stoi(args[i + 2]));
 			//std::cout << "Update info - New tile type: " << std::stoi(args[i]) << " at coords: X - " << args[i + 1] << " Y - " << args[i + 2] << std::endl;
@@ -207,7 +206,6 @@ void MyGame::callback_update_level(std::vector<std::string>& args) {
 
 void MyGame::callback_spawn_bullet(std::vector<std::string>& args) {
 	if (args.size() == 2) {
-		std::cout << "Spawning bullet!" << std::endl;
 		ECS::Transform tf;
 		if (std::stoi(args.at(0)) == 1) {
 			tf = m_Scene->m_Transforms[player1];
@@ -409,11 +407,42 @@ void MyGame::render() {
 void MyGame::update_bullet(Entity bullet) {
 	// Kill bullets after a certain time since firing
 	if (SDL_GetTicks() >= m_Scene->m_Bullets[bullet].firedAt + 30000) {
-		m_Scene->m_Bullets[bullet].moving = false;
-		m_Scene->m_Bullets[bullet].ready = true;
-		m_Scene->m_Bullets[bullet].firedAt = 0;
-		m_Scene->m_SpriteRenders[bullet].m_Visible = false;
-		std::cout << "killing bullet" << std::endl;
+		kill_bullet(bullet);
+		return;
+	}
+
+	// Kill bullet if it collides with a tile or the player!
+	// 1. Get bullets current tile on the map
+	// 2. if that is currently a wall then delete the bullet
+	if (m_Scene->m_Tilemaps[level].tileFromWorld(m_Scene->m_Transforms[bullet].m_Position.x, m_Scene->m_Transforms[bullet].m_Position.y) == ECS::TileType::WALL) {
+		kill_bullet(bullet);
+		return;
+	}
+
+	// 1. check collision with players
+	SDL_Rect player1Rect =
+		SDL_Rect {
+		static_cast<int>(m_Scene->m_Transforms[player1].m_Position.x),
+		static_cast<int>(m_Scene->m_Transforms[player1].m_Position.y),
+		static_cast<int>(m_Scene->m_Transforms[player1].m_Scale.x),
+		static_cast<int>(m_Scene->m_Transforms[player1].m_Scale.y) 
+	};
+	SDL_Rect player2Rect =
+		SDL_Rect {
+		static_cast<int>(m_Scene->m_Transforms[player2].m_Position.x),
+		static_cast<int>(m_Scene->m_Transforms[player2].m_Position.y),
+		static_cast<int>(m_Scene->m_Transforms[player2].m_Scale.x),
+		static_cast<int>(m_Scene->m_Transforms[player2].m_Scale.y) 
+	};
+	SDL_Rect bulletRect =
+		SDL_Rect {
+		static_cast<int>(m_Scene->m_Transforms[bullet].m_Position.x),
+		static_cast<int>(m_Scene->m_Transforms[bullet].m_Position.y),
+		static_cast<int>(m_Scene->m_Transforms[bullet].m_Scale.x),
+		static_cast<int>(m_Scene->m_Transforms[bullet].m_Scale.y) 
+	};
+	if (SDL_HasIntersection(&player1Rect, &bulletRect) || SDL_HasIntersection(&player2Rect, &bulletRect)) {
+		kill_bullet(bullet);
 		return;
 	}
 
@@ -438,4 +467,12 @@ void MyGame::update_bullet(Entity bullet) {
 		std::cout << "No dir found" << std::endl;
 		break;
 	}
+
+}
+
+void MyGame::kill_bullet(Entity bullet) {
+		m_Scene->m_Bullets[bullet].moving = false;
+		m_Scene->m_Bullets[bullet].ready = true;
+		m_Scene->m_Bullets[bullet].firedAt = 0;
+		m_Scene->m_SpriteRenders[bullet].m_Visible = false;
 }
