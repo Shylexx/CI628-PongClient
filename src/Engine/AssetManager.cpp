@@ -47,7 +47,7 @@ void AssetManager::loadTexture(std::string tag, const std::string& path, Graphic
     }
 
     Textures.insert(std::pair<std::string, SDL_Texture*>(tag,newTexture));
-    SDL_Log("Loaded font %s", tag.c_str());
+    SDL_Log("Loaded Texture %s", tag.c_str());
 }
 
 void AssetManager::LoadFont(std::string tag, const std::string& filepath, const int& size) {

@@ -30,6 +30,7 @@ namespace CompTags
 	constexpr EntitySig Sprite = 0x1 << 4;
 	constexpr EntitySig Kinematic = 0x1 << 5;
 	constexpr EntitySig Tilemap = 0x1 << 6;
+	constexpr EntitySig Bullet = 0x1 << 7;
 }
 
 namespace ECS {
@@ -46,6 +47,7 @@ namespace ECS {
 		std::array<Text, MAX_ENTITIES> m_Texts;
 		std::array<Kinematic, MAX_ENTITIES> m_Kinematics;
 		std::array<Tilemap, MAX_ENTITIES> m_Tilemaps;
+		std::array<Bullet, MAX_ENTITIES> m_Bullets;
 
 		void Cleanup();
 

@@ -35,18 +35,15 @@ namespace Net {
                 }
             }
 
-            std::cout << "cmd recv: " << cmd << std::endl;
-            std::cout << "arg size: " << args.size() << std::endl;
+            /*std::cout << "cmd recv: " << cmd << std::endl;
+            std::cout << "arg size: " << args.size() << std::endl;*/
 
    
             if (cmd == "GAME_DATA") {
                 engineptr->callback_game_recv(args);
             }
-            else if (cmd == "SPAWN_ENTITY") {
-              engineptr->callback_spawn_entity(args);
-            }
-            else if (cmd == "KILL_ENTITY") {
-              engineptr->callback_kill_entity(args);
+            else if (cmd == "SPAWN_BULLET") {
+              engineptr->callback_spawn_bullet(args);
             }
             else if (cmd == "ON_CONNECT") {
                 engineptr->callback_on_connect(args);

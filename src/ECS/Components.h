@@ -88,6 +88,21 @@ namespace ECS {
 		void setTile(TileType type, int x, int y) {
 			m_Tiles[y][x] = type;
 		}
+
 	};
+
+		enum BulletDir {
+			UP = 0,
+			DOWN = 1,
+			RIGHT = 2,
+			LEFT = 3,
+		};
+
+		struct Bullet {
+			bool ready = false;
+			BulletDir dir = UP;
+			bool moving = false;
+			int firedAt = 0;
+		};
 }
 #endif

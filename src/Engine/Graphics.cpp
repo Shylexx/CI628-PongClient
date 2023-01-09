@@ -57,7 +57,12 @@ void Graphics::DrawScene(ECS::Scene* scene) {
         if (!scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) { continue; }
 
         // drawsprites
-        DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
+        if (&scene->m_SpriteRenders[e].m_Visible) {
+          if (scene->HasComponents(e, CompTags::Bullet)) {
+            //std::cout << "rendered bullet" << std::endl;
+          }
+          DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
+        }
     }
     // Draw all text components
     for (Entity e = 0; e < MAX_ENTITIES; e++) {

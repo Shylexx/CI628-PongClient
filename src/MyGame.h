@@ -51,10 +51,14 @@ class MyGame {
         void update();
         void render();
 
+        std::array<Entity, 40> bullets;
+        void spawn_bullet(ECS::Transform transform, ECS::BulletDir dir);
+        void update_bullet(Entity bullet);
+
         // Timekeeping
         uint64_t m_Now = SDL_GetPerformanceCounter();
         uint64_t m_Last = 0;
-        float deltaTime = 0;
+        double deltaTime = 0;
 
         // ECS Scene holds data of all objects in the scene
         ECS::Scene* m_Scene;
@@ -84,8 +88,7 @@ class MyGame {
         // updates tiles in an already loaded level
         void callback_update_level(std::vector<std::string>& args);
         // bullet spawning and ending callbacks
-        void callback_spawn_entity(std::vector<std::string>& args);
-        void callback_kill_entity(std::vector<std::string>& args);
+        void callback_spawn_bullet(std::vector<std::string>& args);
         // Queues a message to be sent in the next frame
         void send(std::string message);
 
