@@ -156,10 +156,10 @@ void MyGame::callback_on_connect(std::vector<std::string>& args) {
 void MyGame::callback_game_recv(std::vector<std::string>& args) {
 	// we should have exactly 6 arguments
 	if (args.size() == 4) {
-		game_data.player1X = stoi(args.at(0));
-		game_data.player1Y = stoi(args.at(1));
-		game_data.player2X = stoi(args.at(2));
-		game_data.player2Y = stoi(args.at(3));
+		m_GameData.player1X = stoi(args.at(0));
+		m_GameData.player1Y = stoi(args.at(1));
+		m_GameData.player2X = stoi(args.at(2));
+		m_GameData.player2Y = stoi(args.at(3));
 	}
 	else {
 		std::cerr << "Invalid Game State data received!" << std::endl;
@@ -171,8 +171,8 @@ void MyGame::callback_game_recv(std::vector<std::string>& args) {
 
 void MyGame::callback_update_scores(std::vector<std::string>& args) {
 	if (args.size() == 2) {
-		game_data.score1 = stoi(args.at(0));
-		game_data.score2 = stoi(args.at(1));
+		m_GameData.score1 = stoi(args.at(0));
+		m_GameData.score2 = stoi(args.at(1));
 	}
 }
 
@@ -379,14 +379,13 @@ void MyGame::input(SDL_Event& event) {
 
 void MyGame::update() {
 	// Set local player location based on received data
-	//player1.y = game_data.player1Y;
-	m_Scene->m_Transforms[player1].m_Position.x = game_data.player1X;
-	m_Scene->m_Transforms[player1].m_Position.y = game_data.player1Y;
-	m_Scene->m_Transforms[player2].m_Position.x = game_data.player2X;
-	m_Scene->m_Transforms[player2].m_Position.y = game_data.player2Y;
+	m_Scene->m_Transforms[player1].m_Position.x = m_GameData.player1X;
+	m_Scene->m_Transforms[player1].m_Position.y = m_GameData.player1Y;
+	m_Scene->m_Transforms[player2].m_Position.x = m_GameData.player2X;
+	m_Scene->m_Transforms[player2].m_Position.y = m_GameData.player2Y;
 
-	m_Scene->m_Texts[scoreText2].m_Text = "Player 1: " + std::to_string(game_data.score2);
-	m_Scene->m_Texts[scoreText1].m_Text = "Player 2: " + std::to_string(game_data.score1);
+	m_Scene->m_Texts[scoreText2].m_Text = "Player 1: " + std::to_string(m_GameData.score2);
+	m_Scene->m_Texts[scoreText1].m_Text = "Player 2: " + std::to_string(m_GameData.score1);
 
 	for (auto& bullet : bullets) {
 		if (m_Scene->m_Bullets[bullet].moving) {

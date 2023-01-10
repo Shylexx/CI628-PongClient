@@ -19,14 +19,14 @@ namespace Net {
     int on_receive_tcp(void* engine);
 }
 
-static struct GameData {
+struct GameData {
     int player1X = 0;
     int player1Y = 0;
     int player2X = 0;
     int player2Y = 0;
     int score1 = 0;
     int score2 = 0;
-} game_data;
+};
 
 class MyGame {
 
@@ -67,6 +67,8 @@ class MyGame {
         std::shared_ptr<Graphics> m_Graphics;
 
         int m_NetId = 0;
+
+        GameData m_GameData;
 
     public:
         MyGame();
