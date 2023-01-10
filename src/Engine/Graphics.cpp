@@ -49,7 +49,7 @@ void Graphics::DrawScene(ECS::Scene* scene) {
 	// Render all sprites
 	for (Entity e = 0; e < MAX_ENTITIES; e++) {
 		// Draw the level first!
-		if (!scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) {
+		if (scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) {
 			DrawLevel(&scene->m_Tilemaps[e], &scene->m_Transforms[e]);
 		}
 
