@@ -5,6 +5,7 @@
 
 std::unordered_map<std::string, SDL_Texture*> AssetManager::Textures;
 std::unordered_map<std::string, TTF_Font*> AssetManager::Fonts;
+std::unordered_map<std::string, Mix_Chunk*> AssetManager::SFX;
 
 void AssetManager::Cleanup() {
     // Cleanup all assets loaded into the manager
@@ -20,6 +21,11 @@ void AssetManager::Cleanup() {
         TTF_CloseFont(pair.second);
     }
     Fonts.clear();
+
+    for (auto& pair : SFX) {
+      Mix_FreeChunk(pair.second);
+    }
+    SFX.clear();
 
 }
 
@@ -56,4 +62,16 @@ void AssetManager::LoadFont(std::string tag, const std::string& filepath, const 
         std::cerr << "Could not open font at path: " << filepath << std::endl;
 	  Fonts[tag] = font;
     SDL_Log("Loaded font %s", tag.c_str());
+}
+
+
+void AssetManager::loadSFX(std::string tag, const std::string& filepath) {
+  Mix_Chunk* sfx = Mix_LoadWAV(filepath.c_str());
+  if (sfx) {
+    std::cout << "Sfx Loaded" << std::endl;
+  }
+  else {
+    printf("Mix_LoadWAV: %s\n", Mix_GetError());
+  }
+  SFX.insert(std::pair<std::string, Mix_Chunk*>(tag, sfx));
 }

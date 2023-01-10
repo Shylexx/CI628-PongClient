@@ -46,15 +46,38 @@ void Graphics::DrawScene(ECS::Scene* scene) {
 	//}
 
 
-	// Render all sprites
-	for (Entity e = 0; e < MAX_ENTITIES; e++) {
+	//// Render all sprites
+	//for (Entity e = 0; e < MAX_ENTITIES; e++) {
+	//	// Draw the level first!
+	//	if (scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) {
+	//		DrawLevel(&scene->m_Tilemaps[e], &scene->m_Transforms[e]);
+	//		continue;
+	//	}
+	//	if (scene->HasComponents(e, CompTags::Sprite | CompTags::Transform)) {
+	//		// drawsprites
+	//		if (&scene->m_SpriteRenders[e].m_Visible) {
+	//			DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
+	//			continue;
+	//		}
+	//	}
+	//	if (scene->HasComponents(e, CompTags::Text | CompTags::Transform)) {
+	//		// Draw all text components
+	//		DrawText(&scene->m_Texts[e], &scene->m_Transforms[e]);
+	//		continue;
+	//	}
+	//}
+
 		// Draw the level first!
-		if (scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) {
+		for (Entity e = 0; e < MAX_ENTITIES; e++) {
+			if (!scene->HasComponents(e, CompTags::Tilemap | CompTags::Transform)) { continue; }
+
 			DrawLevel(&scene->m_Tilemaps[e], &scene->m_Transforms[e]);
 		}
 
+		// Render all sprites
+		for (Entity e = 0; e < MAX_ENTITIES; e++) {
+			if (!scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) { continue; }
 
-		if (scene->HasComponents(e, CompTags::Transform | CompTags::Sprite)) {
 			// drawsprites
 			if (&scene->m_SpriteRenders[e].m_Visible) {
 				if (scene->HasComponents(e, CompTags::Bullet)) {
@@ -63,12 +86,13 @@ void Graphics::DrawScene(ECS::Scene* scene) {
 				DrawSprite(&scene->m_SpriteRenders[e], &scene->m_Transforms[e]);
 			}
 		}
-		if (scene->HasComponents(e, CompTags::Text | CompTags::Transform)) {
-			// Draw all text components
+		// Draw all text components
+		for (Entity e = 0; e < MAX_ENTITIES; e++) {
+			if (!scene->HasComponents(e, CompTags::Text | CompTags::Transform)) { continue; }
+
 			DrawText(&scene->m_Texts[e], &scene->m_Transforms[e]);
 		}
-
-	}
+	
 }
 
 void Graphics::DrawSprite(ECS::SpriteRender* sprite, ECS::Transform* transform, SDL_Rect* clip, SDL_Point* center) {

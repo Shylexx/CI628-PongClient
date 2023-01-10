@@ -32,7 +32,10 @@ MyGame::MyGame() {
 
 	m_Scene = new ECS::Scene();
 
-
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+		printf("Mix_OpenAudio: %s\n", Mix_GetError());
+		return;
+	}
 	// Load any assets before doing networking
 	preload_assets();
 
@@ -125,6 +128,7 @@ void MyGame::cleanup() {
 
 	IMG_Quit();
 	TTF_Quit();
+	Mix_CloseAudio();
 
 	// Close connection to the server
 	SDLNet_TCP_Close(m_Socket);
@@ -247,6 +251,7 @@ void MyGame::preload_assets() {
 	AssetManager::loadTexture("Empty", "res/sprites/floortile.png", m_Graphics.get());
 	AssetManager::loadTexture("Player", "res/sprites/playersprite.png", m_Graphics.get());
 	AssetManager::loadTexture("Bullet", "res/sprites/bulletsprite.png", m_Graphics.get());
+	AssetManager::loadSFX("Shoot", "res/sfx/laser_5.wav");
 }
 
 void MyGame::init_entities() {
@@ -301,6 +306,9 @@ void MyGame::spawn_bullet(ECS::Transform transform, ECS::BulletDir dir) {
 		if (m_Scene->m_Bullets[bullet].ready) {
 			m_Scene->m_Transforms[bullet] = transform;
 			m_Scene->m_Bullets[bullet].dir = dir;
+			if (Mix_PlayChannel(-1, AssetManager::SFX.at("Shoot"), 0) == -1) {
+				printf("Error playing sound Mix_PlayChannel: %s\n", Mix_GetError());
+			}
 			switch (dir) {
 			case ECS::BulletDir::RIGHT:
 				m_Scene->m_Transforms[bullet].m_Rotation = 0;
@@ -325,6 +333,7 @@ void MyGame::spawn_bullet(ECS::Transform transform, ECS::BulletDir dir) {
 			}
 			m_Scene->m_SpriteRenders[bullet].m_Visible = true;
 			m_Scene->m_Bullets[bullet].moving = true;
+			m_Scene->m_Bullets[bullet].ready = false;
 			m_Scene->m_Bullets[bullet].firedAt = SDL_GetTicks();
 			break;
 		}
